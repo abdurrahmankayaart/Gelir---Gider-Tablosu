@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// Kese ortak bütçe kuralları.
+// Bir "hane" (households/{hid}) yalnızca üyeleri tarafından okunup yazılabilir.
+// Yeni üye, davet kodunu bilerek yalnızca kendini ekleyebilir.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(hid) {
+      return signedIn()
+        && request.auth.uid in get(/databases/$(database)/documents/households/$(hid)).data.members;
+    }
+
+    match /households/{hid} {
+      // Hane kuran kişi, üye listesinde yalnızca kendisi olacak şekilde oluşturur.
+      allow create: if signedIn()
+        && request.resource.data.members == [request.auth.uid];
+
+      allow read: if signedIn() && request.auth.uid in resource.data.members;
+
+      // Üyeler haneyi güncelleyebilir (bütçeler, ad, ayrılma).
+      // Üye olmayan biri yalnızca doğru davet koduyla kendini ekleyebilir.
+      allow update: if signedIn() && (
+        request.auth.uid in resource.data.members
+        || (
+          request.resource.data.joinCode == resource.data.inviteCode
+          && request.resource.data.members.toSet()
+               == resource.data.members.toSet().union([request.auth.uid].toSet())
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['members', 'memberNames', 'joinCode'])
+        )
+      );
+
+      allow delete: if false;
+
+      // Kayıtlar, sabit kalemler, hedefler, borçlar, kartlar, varlıklar...
+      match /{collection}/{docId} {
+        allow read, write: if isMember(hid);
+      }
+    }
+
+    // Davet kodu → hane eşlemesi. Kod bilinmeden listelenemez.
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn() && isMember(request.resource.data.hid);
+      allow update, delete: if signedIn() && isMember(resource.data.hid);
+    }
+  }
+}
