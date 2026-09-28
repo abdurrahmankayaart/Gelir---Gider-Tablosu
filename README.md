@@ -20,6 +20,15 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Kategori detayı** | Bir kategoriye dokununca son 6 ayın grafiği, ortalamaya göre fark, o kategorinin bütçesi ve bu ayki kayıtları açılır. |
 | **Tüm aylarda arama** | Hareketler'de "Tüm aylar" ile geçmiş tüm kayıtlarda arama. |
 | **Yedek hatırlatıcı · PIN kilidi · Tema** | 30 gündür yedek alınmadıysa hatırlatır. İsteğe bağlı 4 haneli PIN kilidi. Açık / koyu / telefona göre tema. |
+| **Fiş fotoğrafı** | + ekranında "Fiş ekle" ile fotoğraf çek; tutar, tarih ve mağaza telefonda okunur (ilk kullanımda okuma aracı internetten bir kez indirilir). Fotoğraflar yalnızca o telefonda saklanır. |
+| **Hatırlatmalar** | Ana sayfanın üstünde: yaklaşan sabit ödemeler, dolmak üzere olan bütçeler, kart son ödeme günleri, vadesi gelen borçlar, akşam hâlâ kayıt girilmediyse uyarı. |
+| **Ay sonu devri** | Önceki aydan para arttıysa hedefe aktarma ya da bu aya devretme seçeneği. |
+| **Borç & alacak** | Kime ne kadar borç verdin / kimden aldın; kısmi ödemeler, vade takibi. |
+| **Kartlarım** | Kredi kartı kesim ve son ödeme günleri; dönem harcaması, son ekstre ve limit doluluğu. |
+| **Etiketler** | "otel 3000 #tatil" gibi etiketle, bir etiketin toplam maliyetini gör. |
+| **Yıllık özet** | 12 ayın gelir-gider grafiği, yıllık tasarruf, en pahalı ay, yılın en büyük kalemleri. |
+| **Döviz & altın** | Dolar, euro, gram ve çeyrek altın varlıkları ile döviz/altın cinsinden hedefler; güncel kurla TL karşılığı (kur elle de girilebilir). |
+| **Kısayollar ve tanıtım** | Android'de simgeye basılı tutunca "Harcama ekle / Hızlı yaz"; ilk açılışta 3 ekranlık kısa tur. |
 | **Bütçe** | Aylık toplam ve kategori bazında tavan. "Günde ne kadar harcayabilirim" hesabı, Yolunda / Sınıra yakın / Aşıldı durumları. |
 | **Başlangıç şablonları** | Öğrenci, Bekar çalışan, Aile, Serbest çalışan. Her biri hazır bütçe, sabit ödeme ve hızlı ekle listesiyle gelir. |
 | **E-tablodan aktar** | Google E-Tablolar veya Excel'den satırları kopyalayıp yapıştır (Tarih, Açıklama, Tutar, Kategori). `1.250,50` ve `03.09.2026` gibi Türkçe biçimleri tanır, kategoriyi açıklamadan tahmin eder (Migros → Market, Netflix → Abonelikler). |

@@ -1,5 +1,5 @@
 // Kese service worker: works offline, fetches fresh copy when online.
-const CACHE = 'kese-v5';
+const CACHE = 'kese-v6';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -12,6 +12,8 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const sameOrigin = new URL(req.url).origin === location.origin;
+  // exchange-rate APIs and the receipt reader always go straight to the network
+  if (!sameOrigin && !req.url.includes('fonts.g')) return;
   e.respondWith(
     fetch(req).then(res => {
       if (res.ok && (sameOrigin || req.url.includes('fonts.g'))) {
