@@ -170,6 +170,7 @@ h3{font-size:16px;font-weight:700}
 .li .t{font-weight:700;font-size:14.5px}
 .li .m{font-size:12.5px;color:var(--muted)}
 .li.done .t{color:var(--muted)}
+.li-main{grid-column:1/3;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;border:0;background:none;padding:0;text-align:left;min-width:0;border-radius:12px}
 .check{color:var(--good);font-weight:700;font-size:13px}
 
 /* category grid */
@@ -689,7 +690,6 @@ function renderOzet(el) {
   const lb = S.lastBackup || S.since, bdays = Math.floor((Date.now() - lb) / 864e5);
   if (!S.sample && S.tx.length >= 20 && bdays >= 30 && Date.now() > (S.backupSnooze || 0)) h += `<div class="banner" style="background:var(--accent-soft)"><div><b style="color:var(--accent)">${S.lastBackup ? bdays + ' gündür yedek almadın.' : 'Henüz hiç yedek almadın.'}</b> Kayıtların yalnızca bu telefonda duruyor; telefon kaybolursa ya da tarayıcı verisi silinirse gider.</div>
     <div class="row"><button class="btn sm primary" data-act="jsonDl">Şimdi yedek al</button><button class="btn sm" data-act="snoozeBackup">Bir hafta sonra hatırlat</button></div></div>`;
-  if (!S.tx.length && !S.sample) h += `<section class="card"><div class="sec-h"><h2>Nasıl başlamak istersin?</h2></div><p class="hint" style="margin-bottom:12px">Bir şablon seç: bütçeler, sabit ödemeler ve tek dokunuşla eklenen harcamalar hazır gelsin. Hepsini sonra değiştirebilirsin.</p>${profileGrid()}</section>`;
 
   const base = Math.max(inc, exp + sav, 1);
   h += `<section class="hero" aria-label="Ay özeti">
@@ -739,16 +739,17 @@ function renderOzet(el) {
       <button class="qchip add" data-act="newGoal" style="min-width:110px">+ Hedef</button></div></section>`;
   }
 
-  if (S.fixed.length) {
+  {
     const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
     const fx = [...S.fixed].sort((a, b) => a.day - b.day), unpaid = fx.filter(f => !paidIds.has(f.id));
-    const hasInc = fx.some(f => f.type === 'gelir'), waiting = unpaid.filter(f => f.type !== 'gelir').reduce((a, f) => a + f.amount, 0);
-    h += `<section class="card"><div class="sec-h"><h2>${hasInc ? 'Sabit kalemler' : 'Sabit ödemeler'}</h2><span class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi</span></div><div>
-      ${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate() && new Date(cur.y, cur.m, f.day, 23).getTime() > (S.since || 0), inc = f.type === 'gelir';
-        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">Ayın ${f.day}. günü · ${inc ? '+' : ''}${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</div></div>
+    const waiting = unpaid.filter(f => f.type !== 'gelir').reduce((a, f) => a + f.amount, 0);
+    h += `<section class="card"><div class="sec-h"><div><h2>Sabit kalemler</h2>${fx.length ? `<div class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi · düzenlemek için dokun</div>` : ''}</div><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
+      ${fx.length ? `<div>${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate() && new Date(cur.y, cur.m, f.day, 23).getTime() > (S.since || 0), inc = f.type === 'gelir';
+        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><button class="li-main" data-editfixed="${f.id}" aria-label="${esc(f.name)} düzenle"><span class="bub">${ci(c)}</span><span style="min-width:0"><span class="t" style="display:block">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</span><span class="m num" style="display:block">Ayın ${f.day}. günü · ${inc ? '+' : ''}${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</span></span></button>
         ${paid ? `<span class="check">✓ ${inc ? 'Geldi' : 'Ödendi'}</span>` : `<button class="btn sm" data-pay="${f.id}">${inc ? 'Geldi' : 'Ödendi'}</button>`}</div>`; }).join('')}</div>
       ${unpaid.length > 1 ? `<div class="row" style="margin-top:10px;justify-content:space-between"><span class="hint num">${waiting ? money(waiting) + ' ödeme bekliyor' : ''}</span><button class="btn sm" data-act="payAll">Hepsini işle</button></div>` : ''}
-      ${!S.fixed.some(f => f.auto) ? `<p class="hint" style="margin-top:10px">İpucu: Ayarlar → Sabit kalemler'den “otomatik ekle”yi açarsan günü gelince kendiliğinden işlenir.</p>` : ''}
+      ${!S.fixed.some(f => f.auto) ? `<p class="hint" style="margin-top:10px">Bir kaleme dokunup “otomatik ekle”yi açarsan günü gelince kendiliğinden işlenir.</p>` : ''}`
+      : `<p class="hint">Kira, faturalar, abonelikler ve maaş gibi her ay tekrar edenleri ekle; ay içinde tek dokunuşla işlersin.</p>`}
     </section>`;
   }
 
@@ -1199,7 +1200,7 @@ function renderSettings(el) {
   <section class="card"><div class="sec-h"><h2>Sıfırla</h2></div><div class="row">
     ${S.sample ? '<button class="btn sm" data-act="clearSample">Örnek verileri sil</button>' : '<button class="btn sm" data-act="loadSample">Örnek verileri yükle</button>'}
     <button class="btn sm danger" data-act="wipe">Tüm verileri sil</button></div>
-    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 2.2</p></section>`;
+    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 2.3</p></section>`;
   $('#impFile', el).addEventListener('change', e => readFile(e.target.files[0], doImport));
   $('#restoreFile', el).addEventListener('change', e => readFile(e.target.files[0], restore));
 }
@@ -1433,7 +1434,7 @@ function editFixed(f) {
     v => { if (!v.name) return 'Bir ad yaz.'; if (!(v.amount > 0)) return 'Tutarı gir.'; const day = Math.round(v.day); if (!(day >= 1 && day <= 31)) return 'Gün 1 ile 31 arasında olmalı.';
       const o = {name: v.name, type: v.type, amount: v.amount, day, cat: v.cat, auto: v.auto === '1'};
       if (f) Object.assign(f, o); else S.fixed.push({id: uid(), ...o}); save(); autoFixed(); render(); },
-    f && (() => { S.fixed = S.fixed.filter(x => x !== f); save(); render(); toast('Sabit kalem silindi'); }));
+    f && (() => { const i = S.fixed.indexOf(f); S.fixed = S.fixed.filter(x => x !== f); save(); render(); toast(`${f.name} silindi`, {label: 'Geri al', fn: () => { S.fixed.splice(i, 0, f); save(); render(); }}); }));
 }
 function editQuick(q) {
   formModal(q ? 'Şablonu düzenle' : 'Yeni şablon',
