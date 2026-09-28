@@ -8,6 +8,7 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 
 | Bölüm | Ne işe yarar |
 |---|---|
+| **Kişisel karşılama** | İlk açılışta adını sorar; her açılışta "Merhaba Abdurrahman" diye karşılar. Aynı telefonu birden fazla kişi kullanıyorsa (ör. Abdurrahman ve Rumeysa) açılışta "Kim kullanıyor?" diye sorar, herkesin kayıtları ayrı tutulur. |
 | **Hızlı yaz / sesle söyle** | Ana sayfadaki kutuya "kahve 120", "taksi 180 dün nakit", "telefon 24000 6 taksit", "maaş 52000" yazman ya da mikrofona söylemen yeterli. Tutarı, kategoriyi, tarihi, ödeme şeklini ve taksit sayısını kendisi ayıklar. |
 | **Taksitli harcamalar** | Taksit sayısını seçersin, tutar sonraki aylara kendiliğinden dağılır. Özet'te bu ayın ve gelecek ayın taksit yükü görünür. |
 | **Birikim hedefleri** | "Yaz tatili ₺40.000, Haziran 2027" gibi hedef koyarsın; ayda ne kadar ayırman gerektiğini hesaplar. Hedefe eklenen para "elinde kalan"dan düşer. |
