@@ -14,8 +14,11 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Ay raporu** | Toplam harcama, geçen aya göre değişim, en çok harcanan kalemler, en büyük harcama, en pahalı gün, öneriler ve son 3 aya göre önerilen bütçe (tek dokunuşla uygulanır). |
 | **+ düğmesi** | Kendi tuş takımıyla tutar, kategori, tarih (Bugün/Dün/seç), Kart/Nakit ve isteğe bağlı açıklama. Daha önce yazdığın açıklamayı seçince kategori kendiliğinden gelir. |
 | **Tek dokunuşla ekle** | "Kahve ₺120", "Metro ₺35" gibi şablonlar tek dokunuşla eklenir. Tutarı boş olan şablon ("Market") giriş ekranını kategori seçili açar. Her eklemede "Geri al" var. |
-| **Sabit ödemeler** | Kira, aidat, faturalar, abonelikler. Ay içinde "Ödendi" ile tek dokunuşta işlenir, günü geçenler işaretlenir. |
 | **Özet** | Ayın geliri, gideri, kalanı, tasarruf oranı; geçen ayın aynı dönemine göre fark; kategori dağılımı (bütçe çizgisiyle); günlük harcama grafiği; son 6 ay gelir-gider. |
+| **Otomatik sabit kalemler** | Kira, fatura, abonelik ve **maaş gibi sabit gelirler**. "Otomatik" işaretlenenler günü gelince kendiliğinden eklenir; diğerleri "Ödendi / Geldi" ile tek dokunuşta işlenir. |
+| **Kategori detayı** | Bir kategoriye dokununca son 6 ayın grafiği, ortalamaya göre fark, o kategorinin bütçesi ve bu ayki kayıtları açılır. |
+| **Tüm aylarda arama** | Hareketler'de "Tüm aylar" ile geçmiş tüm kayıtlarda arama. |
+| **Yedek hatırlatıcı · PIN kilidi · Tema** | 30 gündür yedek alınmadıysa hatırlatır. İsteğe bağlı 4 haneli PIN kilidi. Açık / koyu / telefona göre tema. |
 | **Bütçe** | Aylık toplam ve kategori bazında tavan. "Günde ne kadar harcayabilirim" hesabı, Yolunda / Sınıra yakın / Aşıldı durumları. |
 | **Başlangıç şablonları** | Öğrenci, Bekar çalışan, Aile, Serbest çalışan. Her biri hazır bütçe, sabit ödeme ve hızlı ekle listesiyle gelir. |
 | **E-tablodan aktar** | Google E-Tablolar veya Excel'den satırları kopyalayıp yapıştır (Tarih, Açıklama, Tutar, Kategori). `1.250,50` ve `03.09.2026` gibi Türkçe biçimleri tanır, kategoriyi açıklamadan tahmin eder (Migros → Market, Netflix → Abonelikler). |

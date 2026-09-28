@@ -311,6 +311,23 @@ textarea.inp{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,mono
 .tipbox{background:var(--accent-soft);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
 .tipbox p{margin:0;display:flex;gap:8px}
 
+.mbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:150px}
+.mb{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.mb .col{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.mb i{display:block;width:100%;max-width:34px;background:var(--c);border-radius:8px 8px 3px 3px;min-height:2px}
+.mb span{font-size:11px;color:var(--ink-2);font-weight:700;min-height:15px}
+.mb small{font-size:11px;color:var(--muted)}
+.mb.now small{color:var(--ink);font-weight:700}
+.lock{position:fixed;inset:0;z-index:55;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.lock-in{width:100%;max-width:320px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center}
+.lock-in svg{width:56px;height:56px}
+.dots{display:flex;gap:16px}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink-2)}
+.dots i.on{background:var(--ink);border-color:var(--ink)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.lock .keypad{width:100%}
+.tag-auto{font-size:10.5px;font-weight:700;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:1px 6px;margin-left:6px}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:var(--bg);border-radius:16px;padding:11px 12px 11px 16px;display:flex;gap:14px;align-items:center;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100% - 32px);width:max-content;animation:toastin .25s cubic-bezier(.2,.9,.25,1)}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,12px)}}
 .toast button{border:0;background:none;color:var(--accent);font-weight:800;white-space:nowrap}
@@ -395,6 +412,21 @@ textarea.inp{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,mono
   <form class="panel" id="mForm" autocomplete="off"></form>
 </div>
 
+<div class="lock" id="lock" hidden>
+  <div class="lock-in">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--accent)"/><path d="M11.5 11c0-1.6 1.6-3 4.5-3s4.5 1.4 4.5 3" fill="none" stroke="var(--on-accent)" stroke-width="2" stroke-linecap="round"/><path d="M8.5 14c0-1.5 1.1-2.8 2.9-2.8h9.2c1.8 0 2.9 1.3 2.9 2.8v6.5c0 2.1-1.8 3.5-3.6 3.5h-7.8c-1.8 0-3.6-1.4-3.6-3.5z" fill="var(--on-accent)"/><circle cx="19.5" cy="17.8" r="1.6" fill="var(--accent)"/></svg>
+    <h2>PIN'ini gir</h2>
+    <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="err" id="lockErr" role="alert"></div>
+    <div class="keypad" id="lockPad">
+      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+      <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+      <button type="button">7</button><button type="button">8</button><button type="button">9</button>
+      <span></span><button type="button">0</button><button type="button" aria-label="Sil">⌫</button>
+    </div>
+    <button type="button" class="linkbtn" id="lockForgot">PIN'i unuttum</button>
+  </div>
+</div>
 <div class="tip" id="tip" hidden></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -447,15 +479,15 @@ const cs = c => `style="--c:${c.color}"`;
 const PROFILES = {
   ogrenci: {name: 'Öğrenci', ic: '🎓', desc: 'Yurt/ev, yemek, ulaşım, okul', total: 20000,
     cats: {kira: 5500, yemek: 4500, market: 3000, ulasim: 1200, eglence: 1500, egitim: 1500, iletisim: 500, giyim: 1000},
-    fixed: [['Yurt / ev payı', 'kira', 5500, 1], ['Telefon', 'iletisim', 400, 10], ['Müzik aboneliği', 'abonelik', 60, 15]],
+    fixed: [['Harçlık / burs', 'digerg', 8000, 1, 'gelir'], ['Yurt / ev payı', 'kira', 5500, 1], ['Telefon', 'iletisim', 400, 10], ['Müzik aboneliği', 'abonelik', 60, 15]],
     quick: [['Kahve', 'yemek', 90], ['Yemekhane', 'yemek', 60], ['Otobüs', 'ulasim', 27], ['Market', 'market', 0], ['Fotokopi', 'egitim', 0], ['Harçlık', 'digerg', 0, 'gelir']]},
   calisan: {name: 'Bekar çalışan', ic: '💼', desc: 'Kira, faturalar, dışarıda yemek', total: 40000,
     cats: {kira: 15900, iletisim: 1000, market: 6500, yemek: 5000, ulasim: 2500, fatura: 2200, eglence: 3000, giyim: 2000, abonelik: 500},
-    fixed: [['Kira', 'kira', 15000, 1], ['Aidat', 'kira', 900, 5], ['Elektrik', 'fatura', 800, 12], ['Doğalgaz', 'fatura', 1100, 14], ['İnternet', 'iletisim', 450, 18], ['Telefon', 'iletisim', 550, 20], ['Netflix', 'abonelik', 230, 22], ['Spor salonu', 'eglence', 1200, 3]],
+    fixed: [['Maaş', 'maas', 52000, 1, 'gelir'], ['Kira', 'kira', 15000, 1], ['Aidat', 'kira', 900, 5], ['Elektrik', 'fatura', 800, 12], ['Doğalgaz', 'fatura', 1100, 14], ['İnternet', 'iletisim', 450, 18], ['Telefon', 'iletisim', 550, 20], ['Netflix', 'abonelik', 230, 22], ['Spor salonu', 'eglence', 1200, 3]],
     quick: [['Kahve', 'yemek', 120], ['Öğle yemeği', 'yemek', 350], ['Metro', 'ulasim', 35], ['Market', 'market', 0], ['Taksi', 'ulasim', 0], ['Maaş', 'maas', 0, 'gelir']]},
   aile: {name: 'Aile', ic: '👨‍👩‍👧', desc: 'Ev, okul, çocuk, mutfak', total: 74000,
     cats: {kira: 23200, iletisim: 500, market: 15000, fatura: 5500, egitim: 6500, ulasim: 5000, saglik: 2000, giyim: 4000, eglence: 3000, kredi: 6000},
-    fixed: [['Kira', 'kira', 22000, 1], ['Aidat', 'kira', 1200, 5], ['Elektrik', 'fatura', 1600, 12], ['Doğalgaz', 'fatura', 2200, 14], ['Su', 'fatura', 450, 16], ['İnternet', 'iletisim', 450, 18], ['Okul servisi', 'egitim', 3500, 2], ['Kredi taksiti', 'kredi', 6000, 25]],
+    fixed: [['Maaş', 'maas', 60000, 1, 'gelir'], ['Kira', 'kira', 22000, 1], ['Aidat', 'kira', 1200, 5], ['Elektrik', 'fatura', 1600, 12], ['Doğalgaz', 'fatura', 2200, 14], ['Su', 'fatura', 450, 16], ['İnternet', 'iletisim', 450, 18], ['Okul servisi', 'egitim', 3500, 2], ['Kredi taksiti', 'kredi', 6000, 25]],
     quick: [['Ekmek', 'market', 15], ['Market', 'market', 0], ['Pazar', 'market', 0], ['Akaryakıt', 'ulasim', 0], ['Eczane', 'saglik', 0], ['Maaş', 'maas', 0, 'gelir']]},
   serbest: {name: 'Serbest çalışan', ic: '🧑‍💻', desc: 'Değişken gelir, vergi, ofis', total: 46000,
     cats: {kira: 17000, market: 6000, yemek: 4000, ulasim: 2000, fatura: 2200, abonelik: 1500, kredi: 6500, diger: 6000, iletisim: 500},
@@ -466,7 +498,7 @@ function applyProfile(s, key) {
   const p = PROFILES[key];
   s.profile = key;
   s.budgets = {total: p.total, cats: {...p.cats}};
-  s.fixed = p.fixed.map(([name, cat, amount, day]) => ({id: uid(), name, cat, amount, day, type: 'gider'}));
+  s.fixed = p.fixed.map(([name, cat, amount, day, type]) => ({id: uid(), name, cat, amount, day, type: type || 'gider', auto: false}));
   s.quick = p.quick.map(([name, cat, amount, type]) => ({id: uid(), name, cat, amount, type: type || 'gider'}));
 }
 const blank = () => ({v: 2, tx: [], budgets: {total: 0, cats: {}}, fixed: [], quick: [], customCats: [], goals: [], profile: null, sample: false});
@@ -486,9 +518,8 @@ function makeSample() {
       if (day > last) return;
       s.tx.push({id: uid(), type, cat, amount: Math.round(amount / 5) * 5, note, date: `${y}-${pad(m + 1)}-${pad(day)}`, method: r() < .8 ? 'kart' : 'nakit', s: 1, ...extra});
     };
-    add(1, 'gelir', 'maas', 52000, 'Maaş');
     if (r() < .5) add(10 + Math.floor(r() * 12), 'gelir', 'ek', 3000 + Math.round(r() * 40) * 100, 'Serbest proje');
-    s.fixed.forEach(f => add(Math.min(f.day, daysIn(y, m)), 'gider', f.cat, f.amount * (f.cat === 'fatura' ? .8 + r() * .5 : 1), f.name, {fixedId: f.id}));
+    s.fixed.forEach(f => add(Math.min(f.day, daysIn(y, m)), f.type, f.cat, f.amount * (f.cat === 'fatura' ? .8 + r() * .5 : 1), f.name, {fixedId: f.id}));
     for (let day = 1; day <= last; day++) {
       if (r() < .33) add(day, 'gider', 'market', 250 + r() * 1100, pick(['Migros', 'A101', 'BİM', 'Şok', 'Pazar']));
       if (r() < .45) add(day, 'gider', 'yemek', 110 + r() * 480, pick(['Kahve', 'Öğle yemeği', 'Akşam yemeği', 'Döner', 'Kahve']));
@@ -513,20 +544,28 @@ let S;
 function load() { try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* keep in memory */ } }
 function loadUi() { try { return JSON.parse(localStorage.getItem(KEY + '.ui')) || {}; } catch (e) { return {}; } }
-function saveUi() { try { localStorage.setItem(KEY + '.ui', JSON.stringify({view})); } catch (e) {} }
+function saveUi() { try { localStorage.setItem(KEY + '.ui', JSON.stringify({view, theme})); } catch (e) {} }
 S = load();
 if (!S || !Array.isArray(S.tx)) S = makeSample();
 S.customCats = S.customCats || []; S.budgets = S.budgets || {total: 0, cats: {}}; S.budgets.cats = S.budgets.cats || {};
 S.goals = S.goals || []; S.fixed = S.fixed || []; S.quick = S.quick || []; S.v = 2;
 S.customCats.forEach((c, i) => { if (!c.color) c.color = PALETTE[i % PALETTE.length]; });
+S.fixed.forEach(f => { f.type = f.type || 'gider'; });
+S.since = S.since || Date.now(); S.autoDone = S.autoDone || {};
 
 /* ================= state ================= */
 const now0 = new Date();
 let cur = {y: now0.getFullYear(), m: now0.getMonth()};
 const VIEWS = ['ozet', 'hareketler', 'butce', 'hedefler', 'ayarlar'];
 let view = location.hash.slice(1) || loadUi().view || 'ozet';
+let theme = loadUi().theme || 'system';
+function applyTheme() {
+  const root = document.documentElement;
+  if (theme === 'light' || theme === 'dark') root.setAttribute('data-theme', theme); else if (root.getAttribute('data-theme') && loadUi().theme) root.removeAttribute('data-theme');
+}
+applyTheme();
 if (!VIEWS.includes(view)) view = 'ozet';
-let listFilter = {q: '', type: 'all', cat: ''};
+let listFilter = {q: '', type: 'all', cat: '', all: false};
 let showAllCats = false;
 
 const monthTx = (y, m) => { const k = mkey(y, m); return S.tx.filter(t => t.date.slice(0, 7) === k); };
@@ -544,6 +583,19 @@ function streak() {
 function ring(pct, color, size = 72, stroke = 9, label = '') {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct));
   return `<div class="ring" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="${stroke}"/>${p > 0 ? `<circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c * p} ${c}"/>` : ''}</svg><span style="font-size:${Math.round(size * .2)}px">${label}</span></div>`;
+}
+
+function autoFixed() {
+  const n = new Date(), y = n.getFullYear(), m = n.getMonth(), k = mkey(y, m), dim = daysIn(y, m);
+  const done = new Set(S.autoDone[k] || []);
+  S.tx.filter(t => t.fixedId && t.date.slice(0, 7) === k).forEach(t => done.add(t.fixedId));
+  const due = S.fixed.filter(f => f.auto && !done.has(f.id) && Math.min(f.day, dim) <= n.getDate());
+  if (!due.length) return 0;
+  const ids = due.map(f => { const rec = {id: uid(), type: f.type || 'gider', cat: f.cat, amount: f.amount, note: f.name, date: `${y}-${pad(m + 1)}-${pad(Math.min(f.day, dim))}`, method: 'kart', fixedId: f.id, ts: Date.now()}; S.tx.push(rec); return rec.id; });
+  S.autoDone = {[k]: [...(S.autoDone[k] || []), ...due.map(f => f.id)]};
+  save();
+  setTimeout(() => toast(`${due.length} sabit kalem otomatik işlendi: ${due.map(f => f.name).join(', ')}`, undoIds(ids)), 500);
+  return due.length;
 }
 
 /* ================= frame ================= */
@@ -571,6 +623,9 @@ function renderOzet(el) {
 
   if (S.sample) h += `<div class="banner"><div><b>Örnek verilerle açıldı.</b> Uygulamayı kurcalayabilmen için 6 aylık uydurma kayıt ve iki birikim hedefi ekledik. Kendi harcamalarına geçmeden önce sil.</div>
     <div class="row"><button class="btn sm dark" data-act="clearSample">Örnekleri sil, sıfırdan başla</button><button class="btn sm" data-act="goSettings">Başlangıç şablonu seç</button></div></div>`;
+  const lb = S.lastBackup || S.since, bdays = Math.floor((Date.now() - lb) / 864e5);
+  if (!S.sample && S.tx.length >= 20 && bdays >= 30 && Date.now() > (S.backupSnooze || 0)) h += `<div class="banner" style="background:var(--accent-soft)"><div>💾 <b style="color:var(--accent)">${S.lastBackup ? bdays + ' gündür yedek almadın.' : 'Henüz hiç yedek almadın.'}</b> Kayıtların yalnızca bu telefonda duruyor; telefon kaybolursa ya da tarayıcı verisi silinirse gider.</div>
+    <div class="row"><button class="btn sm primary" data-act="jsonDl">Şimdi yedek al</button><button class="btn sm" data-act="snoozeBackup">Bir hafta sonra hatırlat</button></div></div>`;
   if (!S.tx.length && !S.sample) h += `<section class="card"><div class="sec-h"><h2>Nasıl başlamak istersin?</h2></div><p class="hint" style="margin-bottom:12px">Bir şablon seç: bütçeler, sabit ödemeler ve tek dokunuşla eklenen harcamalar hazır gelsin. Hepsini sonra değiştirebilirsin.</p>${profileGrid()}</section>`;
 
   const base = Math.max(inc, exp + sav, 1);
@@ -623,11 +678,13 @@ function renderOzet(el) {
   if (S.fixed.length) {
     const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
     const fx = [...S.fixed].sort((a, b) => a.day - b.day), unpaid = fx.filter(f => !paidIds.has(f.id));
-    h += `<section class="card"><div class="sec-h"><h2>Sabit ödemeler</h2><span class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi</span></div><div>
-      ${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate();
-        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><span class="bub">${c.ic}</span><div><div class="t">${esc(f.name)}</div><div class="m num">Ayın ${f.day}. günü · ${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</div></div>
-        ${paid ? '<span class="check">✓ Ödendi</span>' : `<button class="btn sm" data-pay="${f.id}">Ödendi</button>`}</div>`; }).join('')}</div>
-      ${unpaid.length > 1 ? `<div class="row" style="margin-top:10px;justify-content:space-between"><span class="hint num">${money(unpaid.reduce((a, f) => a + f.amount, 0))} bekliyor</span><button class="btn sm" data-act="payAll">Hepsini işle</button></div>` : ''}
+    const hasInc = fx.some(f => f.type === 'gelir'), waiting = unpaid.filter(f => f.type !== 'gelir').reduce((a, f) => a + f.amount, 0);
+    h += `<section class="card"><div class="sec-h"><h2>${hasInc ? 'Sabit kalemler' : 'Sabit ödemeler'}</h2><span class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi</span></div><div>
+      ${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate(), inc = f.type === 'gelir';
+        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><span class="bub">${c.ic}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">Ayın ${f.day}. günü · ${inc ? '+' : ''}${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</div></div>
+        ${paid ? `<span class="check">✓ ${inc ? 'Geldi' : 'Ödendi'}</span>` : `<button class="btn sm" data-pay="${f.id}">${inc ? 'Geldi' : 'Ödendi'}</button>`}</div>`; }).join('')}</div>
+      ${unpaid.length > 1 ? `<div class="row" style="margin-top:10px;justify-content:space-between"><span class="hint num">${waiting ? money(waiting) + ' ödeme bekliyor' : ''}</span><button class="btn sm" data-act="payAll">Hepsini işle</button></div>` : ''}
+      ${!S.fixed.some(f => f.auto) ? `<p class="hint" style="margin-top:10px">İpucu: Ayarlar → Sabit kalemler'den “otomatik ekle”yi açarsan günü gelince kendiliğinden işlenir.</p>` : ''}
     </section>`;
   }
 
@@ -673,7 +730,7 @@ function renderOzet(el) {
   wireQuickText();
 }
 function profileGrid() {
-  return `<div class="profiles">${Object.entries(PROFILES).map(([k, p]) => `<button class="prof" data-prof="${k}" aria-current="${S.profile === k}"><span class="ic">${p.ic}</span><b>${p.name}</b><small>${p.desc}</small><small class="num">Bütçe ${money(p.total)} · ${p.fixed.length} sabit ödeme</small></button>`).join('')}</div>`;
+  return `<div class="profiles">${Object.entries(PROFILES).map(([k, p]) => `<button class="prof" data-prof="${k}" aria-current="${S.profile === k}"><span class="ic">${p.ic}</span><b>${p.name}</b><small>${p.desc}</small><small class="num">Bütçe ${money(p.total)} · ${p.fixed.length} sabit kalem</small></button>`).join('')}</div>`;
 }
 
 /* ================= quick text (typing / voice) ================= */
@@ -832,24 +889,25 @@ window.addEventListener('scroll', () => { tip.hidden = true; }, {passive: true})
 
 /* ================= HAREKETLER ================= */
 function renderList(el) {
-  const txs = monthTx(cur.y, cur.m), used = [...new Set(txs.map(t => t.cat))], q = trLow(listFilter.q);
+  const txs = listFilter.all ? S.tx : monthTx(cur.y, cur.m), used = [...new Set(txs.map(t => t.cat))], q = trLow(listFilter.q);
   const f = txs.filter(t => (listFilter.type === 'all' || t.type === listFilter.type) && (!listFilter.cat || t.cat === listFilter.cat) &&
     (!q || trLow(t.note).includes(q) || trLow(catById(t.cat).name).includes(q))).sort((a, b) => b.date.localeCompare(a.date) || (b.ts || 0) - (a.ts || 0));
   const groups = {}; f.forEach(t => (groups[t.date] = groups[t.date] || []).push(t));
   let h = `<div style="display:flex;flex-direction:column;gap:10px">
     <input class="inp" id="q" type="search" placeholder="Ara: açıklama veya kategori" value="${esc(listFilter.q)}" aria-label="Kayıtlarda ara">
     <div class="segs">${[['all', 'Tümü'], ['gider', 'Giderler'], ['gelir', 'Gelirler']].map(([k, l]) => `<button class="seg-b" data-ft="${k}" aria-pressed="${listFilter.type === k}">${l}</button>`).join('')}
-      <select class="seg-b" id="fcat" aria-label="Kategori filtresi"><option value="">Tüm kategoriler</option>${used.map(id => `<option value="${id}" ${listFilter.cat === id ? 'selected' : ''}>${catById(id).ic} ${esc(catById(id).name)}</option>`).join('')}</select></div>
+      <button class="seg-b" data-fall="1" aria-pressed="${listFilter.all}">Tüm aylar</button><select class="seg-b" id="fcat" aria-label="Kategori filtresi"><option value="">Tüm kategoriler</option>${used.map(id => `<option value="${id}" ${listFilter.cat === id ? 'selected' : ''}>${catById(id).ic} ${esc(catById(id).name)}</option>`).join('')}</select></div>
     <div class="hint num">${f.length} kayıt · Gider <b style="color:var(--ink)">${money(sum(f, 'gider'))}</b> · Gelir <b style="color:var(--ink)">${money(sum(f, 'gelir'))}</b>${f.length ? ' · Silmek için sola kaydır' : ''}</div></div>`;
-  const days = Object.keys(groups);
+  const allDays = Object.keys(groups), days = allDays.slice(0, 120);
   if (!days.length) h += `<div class="card empty">${txs.length ? 'Aramana uyan kayıt yok.' : 'Bu ay için kayıt yok.'}</div>`;
   days.forEach(d => {
     const dt = parseD(d), g = groups[d], dayE = sum(g, 'gider');
-    h += `<div><div class="day-h"><span>${dt.getDate()} ${AY[dt.getMonth()]} · ${GUN[dt.getDay()]}</span><span class="num">${dayE ? '−' + money(dayE) : ''}</span></div><div class="txg">`;
+    h += `<div><div class="day-h"><span>${dt.getDate()} ${AY[dt.getMonth()]}${dt.getFullYear() !== now0.getFullYear() ? ' ' + dt.getFullYear() : ''} · ${GUN[dt.getDay()]}</span><span class="num">${dayE ? '−' + money(dayE) : ''}</span></div><div class="txg">`;
     g.forEach(t => { const c = catById(t.cat);
       h += `<div class="txw"><span class="del">Sil</span><button class="tx" data-tx="${t.id}" ${cs(c)}><span class="bub">${c.ic}</span><span style="min-width:0"><div class="t">${esc(t.note || c.name)}${t.inst ? `<span class="badge">${t.inst.i}/${t.inst.n} taksit</span>` : ''}</div><div class="m">${esc(c.name)}${t.method === 'nakit' ? ' · Nakit' : ''}${t.fixedId ? ' · sabit ödeme' : ''}</div></span><span class="a num ${t.type === 'gelir' ? 'in' : ''}">${t.type === 'gelir' ? '+' : '−'}${money(t.amount)}</span></button></div>`; });
     h += `</div></div>`;
   });
+  if (allDays.length > days.length) h += `<p class="hint" style="text-align:center">En yeni ${days.length} gün gösteriliyor. Daraltmak için ara ya da kategori seç.</p>`;
   el.innerHTML = h;
   const qi = $('#q', el);
   qi.addEventListener('input', () => { listFilter.q = qi.value; const pos = qi.selectionStart; renderList(el); const n = $('#q', el); n.focus(); n.setSelectionRange(pos, pos); });
@@ -871,6 +929,25 @@ document.addEventListener('pointerup', () => {
   else { s.row.style.transform = ''; setTimeout(() => { s.row.style.transition = ''; }, 220); }
 });
 document.addEventListener('pointercancel', () => { if (sw) { sw.row.style.transform = ''; sw = null; } });
+
+/* ================= category detail ================= */
+function openCat(id) {
+  const c = catById(id), months = [];
+  for (let k = 5; k >= 0; k--) { const d = new Date(cur.y, cur.m - k, 1); months.push({m: d.getMonth(), v: sum(monthTx(d.getFullYear(), d.getMonth()).filter(t => t.cat === id))}); }
+  const max = Math.max(1, ...months.map(o => o.v)), b = S.budgets.cats[id] || 0, curV = months[5].v;
+  const prev = months.slice(0, 5).filter(o => o.v > 0), avg = prev.length ? prev.reduce((a, o) => a + o.v, 0) / prev.length : 0;
+  const list = monthTx(cur.y, cur.m).filter(t => t.cat === id).sort((a, x) => x.date.localeCompare(a.date) || (x.ts || 0) - (a.ts || 0));
+  openModal(`<div class="grabzone"><div class="grab"></div><div class="sheet-h" ${cs(c)}><div class="row" style="gap:10px"><span class="bub">${c.ic}</span><h2>${esc(c.name)}</h2></div><button type="button" class="x" data-mclose aria-label="Kapat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div></div>
+    <div><div class="hint">${AY[cur.m]} ${cur.y}</div><div class="rp-big num">${money(curV)}</div>
+      ${avg ? `<div class="hint num">Önceki ayların ortalaması ${money(Math.round(avg))} · ${curV >= avg ? '▲' : '▼'} %${Math.abs(pctOf(curV - avg, avg))}</div>` : ''}</div>
+    <div class="mbars" ${cs(c)} role="img" aria-label="Son 6 ay ${esc(c.name)} harcaması">${months.map((o, i) => `<div class="mb ${i === 5 ? 'now' : ''}"><span class="num">${o.v ? kfmt(o.v) : ''}</span><div class="col"><i style="height:${o.v / max * 100}%;${i === 5 ? '' : 'opacity:.45'}"></i></div><small>${AYK[o.m]}</small></div>`).join('')}</div>
+    ${c.type === 'gider' ? `<label class="field">Aylık bütçe${b ? ` · ${curV <= b ? money(b - curV) + ' kaldı' : money(curV - b) + ' aşıldı'}` : ''}<div class="money-in"><input id="catBud" inputmode="numeric" value="${b || ''}" placeholder="Bütçe koy (isteğe bağlı)"></div></label>` : ''}
+    <h3>Bu ayki kayıtlar (${list.length})</h3>
+    ${list.length ? `<div class="txg">${list.map(t => `<button type="button" class="tx" data-tx="${t.id}" ${cs(c)} style="border-bottom:1px solid var(--line)"><span class="bub">${c.ic}</span><span style="min-width:0"><div class="t">${esc(t.note || c.name)}${t.inst ? `<span class="badge">${t.inst.i}/${t.inst.n}</span>` : ''}</div><div class="m">${parseD(t.date).getDate()} ${AY[cur.m]} · ${GUN[parseD(t.date).getDay()]}</div></span><span class="a num ${t.type === 'gelir' ? 'in' : ''}">${money(t.amount)}</span></button>`).join('')}</div>` : '<p class="hint">Bu ay bu kategoride kayıt yok.</p>'}
+    <div class="save-row"><button type="button" class="btn" data-catlist="${id}" style="flex:1">Tüm hareketlerde aç</button><button type="button" class="btn primary" data-catadd="${id}" style="flex:1">+ Bu kategoriye ekle</button></div>`);
+  const bi = $('#catBud', mForm);
+  if (bi) bi.addEventListener('change', () => { const v = Math.max(0, Math.round(+String(bi.value).replace(/\./g, '').replace(',', '.') || 0)); if (v) S.budgets.cats[id] = v; else delete S.budgets.cats[id]; save(); render(); openCat(id); toast(v ? `${c.name} bütçesi ${money(v)}` : `${c.name} bütçesi kaldırıldı`); });
+}
 
 /* ================= BÜTÇE ================= */
 function renderBudget(el) {
@@ -1028,8 +1105,9 @@ function renderSettings(el) {
   el.innerHTML = `<section><h1 style="font-size:26px">Ayarlar</h1></section>
   ${standalone ? '' : `<section class="card" style="background:var(--accent-soft);border:0"><h2>📲 Telefona uygulama olarak kur</h2><p class="hint" style="margin-top:6px;color:var(--ink-2)"><b>iPhone:</b> Safari'de Paylaş → Ana Ekrana Ekle. <b>Android:</b> Chrome'da ⋮ → Uygulamayı yükle. Ana ekrandan tam ekran açılır, internet olmadan da çalışır.</p></section>`}
   <section class="card"><div class="sec-h"><h2>Başlangıç şablonları</h2></div><p class="hint" style="margin-bottom:12px">Bütçeleri, sabit ödemeleri ve tek dokunuşla ekle düğmelerini hazırlar. Kayıtların silinmez.</p>${profileGrid()}</section>
-  <section class="card"><div class="sec-h"><h2>Sabit ödemeler</h2><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
-    <div>${S.fixed.length ? [...S.fixed].sort((a, b) => a.day - b.day).map(f => { const c = catById(f.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${c.ic}</span><div><div class="t">${esc(f.name)}</div><div class="m num">${money(f.amount)} · ayın ${f.day}. günü</div></div><button class="btn sm" data-editfixed="${f.id}">Düzenle</button></div>`; }).join('') : '<p class="hint">Kira, fatura, abonelik gibi her ay tekrar edenleri ekle.</p>'}</div></section>
+  <section class="card"><div class="sec-h"><h2>Sabit kalemler</h2><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
+    <p class="hint" style="margin-bottom:6px">Kira, fatura, abonelik, maaş gibi her ay tekrar edenler. “Otomatik” olanlar günü gelince kendiliğinden eklenir.</p>
+    <div>${S.fixed.length ? [...S.fixed].sort((a, b) => a.day - b.day).map(f => { const c = catById(f.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${c.ic}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">${f.type === 'gelir' ? 'Gelir +' : ''}${money(f.amount)} · ayın ${f.day}. günü</div></div><button class="btn sm" data-editfixed="${f.id}">Düzenle</button></div>`; }).join('') : '<p class="hint">Henüz sabit kalem yok.</p>'}</div></section>
   <section class="card"><div class="sec-h"><h2>Tek dokunuşla ekle</h2><button class="btn sm" data-act="newQuick">+ Ekle</button></div>
     <p class="hint" style="margin-bottom:6px">Tutar yazarsan tek dokunuşla eklenir; boş bırakırsan kategori seçili giriş ekranı açılır.</p>
     <div>${S.quick.map(q => { const c = catById(q.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${c.ic}</span><div><div class="t">${esc(q.name)}</div><div class="m num">${q.amount ? money(q.amount) : 'tutar sorulur'} · ${esc(c.name)}</div></div><button class="btn sm" data-editquick="${q.id}">Düzenle</button></div>`; }).join('')}</div></section>
@@ -1041,14 +1119,19 @@ function renderSettings(el) {
     <div class="row" style="margin-top:10px"><button class="btn primary sm" data-act="importText">Satırları aktar</button><label class="btn sm">CSV dosyası seç<input type="file" id="impFile" accept=".csv,.tsv,.txt,text/csv" hidden></label></div>
     <div class="hint" id="impMsg" style="margin-top:8px"></div></section>
   <section class="card"><div class="sec-h"><h2>Yedek</h2></div>
-    <p class="hint" style="margin-bottom:10px">Kayıtlar yalnızca bu cihazda durur. Ayda bir yedek al; telefon değiştirirken yedeği yeni telefonda geri yükle.</p>
+    <p class="hint" style="margin-bottom:10px">Kayıtlar yalnızca bu cihazda durur. Ayda bir yedek al; telefon değiştirirken yedeği yeni telefonda geri yükle. <b>${S.lastBackup ? `Son yedek: ${parseD(dstr(new Date(S.lastBackup))).getDate()} ${AY[new Date(S.lastBackup).getMonth()]} ${new Date(S.lastBackup).getFullYear()}` : 'Henüz yedek alınmadı.'}</b></p>
     <div class="row"><button class="btn sm" data-act="csvDl">Excel için CSV indir</button><button class="btn sm" data-act="csvCopy">Tabloyu kopyala</button></div>
     <div class="row" style="margin-top:8px"><button class="btn sm" data-act="jsonDl">Yedek dosyası indir</button><button class="btn sm" data-act="jsonCopy">Yedeği kopyala</button><label class="btn sm">Yedekten geri yükle<input type="file" id="restoreFile" accept=".json,application/json" hidden></label></div>
     <textarea class="inp" id="copyBox" readonly hidden style="margin-top:10px"></textarea></section>
+  <section class="card"><div class="sec-h"><h2>Görünüm</h2></div>
+    <div class="segs">${[['system', 'Telefona göre'], ['light', 'Açık'], ['dark', 'Koyu']].map(([k, l]) => `<button class="seg-b" data-themeset="${k}" aria-pressed="${theme === k}">${l}</button>`).join('')}</div></section>
+  <section class="card"><div class="sec-h"><h2>Uygulama kilidi</h2>${getPin() ? '<span class="pill good">Açık</span>' : ''}</div>
+    <p class="hint" style="margin-bottom:10px">Uygulamayı açarken 4 haneli PIN sorar; telefonu eline alan biri kayıtlarını göremez. PIN'i unutursan kurtarılamaz.</p>
+    <div class="row">${getPin() ? '<button class="btn sm" data-act="setPin">PIN\'i değiştir</button><button class="btn sm danger" data-act="removePin">Kilidi kaldır</button>' : '<button class="btn sm primary" data-act="setPin">PIN koy</button>'}</div></section>
   <section class="card"><div class="sec-h"><h2>Sıfırla</h2></div><div class="row">
     ${S.sample ? '<button class="btn sm" data-act="clearSample">Örnek verileri sil</button>' : '<button class="btn sm" data-act="loadSample">Örnek verileri yükle</button>'}
     <button class="btn sm danger" data-act="wipe">Tüm verileri sil</button></div>
-    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 2.0</p></section>`;
+    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 2.1</p></section>`;
   $('#impFile', el).addEventListener('change', e => readFile(e.target.files[0], doImport));
   $('#restoreFile', el).addEventListener('change', e => readFile(e.target.files[0], restore));
 }
@@ -1259,6 +1342,8 @@ function formModal(title, fields, vals, onSave, onDelete) {
       f.t === 'type' ? `<select class="inp" id="f_${f.k}"><option value="gider" ${vals[f.k] !== 'gelir' ? 'selected' : ''}>Gider</option><option value="gelir" ${vals[f.k] === 'gelir' ? 'selected' : ''}>Gelir</option></select>` :
       f.t === 'cat' ? `<select class="inp" id="f_${f.k}">${catOpts(vals.type || 'gider', vals[f.k])}</select>` :
       f.t === 'month' ? `<input class="inp" type="month" id="f_${f.k}" value="${esc(vals[f.k] || '')}">` :
+      f.t === 'sel' ? `<select class="inp" id="f_${f.k}">${f.opts.map(([v, l]) => `<option value="${v}" ${String(vals[f.k]) === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>` :
+      f.t === 'pin' ? `<input class="inp" type="password" id="f_${f.k}" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••">` :
       f.t === 'date' ? `<input class="inp" type="date" id="f_${f.k}" value="${esc(vals[f.k] || '')}">` :
       `<input class="inp" id="f_${f.k}" ${f.t === 'num' ? 'inputmode="decimal"' : ''} value="${esc(vals[f.k] ?? '')}" placeholder="${esc(f.ph || '')}" maxlength="${f.max || 60}">`}</label>`).join('')}
     <div class="err" id="mErr"></div>
@@ -1273,12 +1358,14 @@ function formModal(title, fields, vals, onSave, onDelete) {
   const first = $('input', mForm); if (first && !first.value) setTimeout(() => first.focus(), 250);
 }
 function editFixed(f) {
-  formModal(f ? 'Sabit ödemeyi düzenle' : 'Yeni sabit ödeme',
-    [{k: 'name', label: 'Adı', ph: 'örn. Kira, Elektrik, Netflix'}, {k: 'amount', label: 'Tutar (₺)', t: 'num', ph: 'Değişkense tahmini tutar'}, {k: 'day', label: 'Ayın kaçında ödenir?', t: 'num', ph: '1–31', max: 2}, {k: 'cat', label: 'Kategori', t: 'cat'}],
-    f || {type: 'gider', cat: 'fatura'},
+  formModal(f ? 'Sabit kalemi düzenle' : 'Yeni sabit kalem',
+    [{k: 'name', label: 'Adı', ph: 'örn. Kira, Elektrik, Maaş'}, {k: 'type', label: 'Tür', t: 'type'}, {k: 'amount', label: 'Tutar (₺)', t: 'num', ph: 'Değişkense tahmini tutar'}, {k: 'day', label: 'Ayın kaçında?', t: 'num', ph: '1–31', max: 2}, {k: 'cat', label: 'Kategori', t: 'cat'},
+     {k: 'auto', label: 'Günü gelince otomatik eklensin mi?', t: 'sel', opts: [['0', 'Hayır, ben işaretlerim'], ['1', 'Evet, otomatik ekle']]}],
+    f ? {...f, auto: f.auto ? '1' : '0'} : {type: 'gider', cat: 'fatura', auto: '0'},
     v => { if (!v.name) return 'Bir ad yaz.'; if (!(v.amount > 0)) return 'Tutarı gir.'; const day = Math.round(v.day); if (!(day >= 1 && day <= 31)) return 'Gün 1 ile 31 arasında olmalı.';
-      if (f) Object.assign(f, {name: v.name, amount: v.amount, day, cat: v.cat}); else S.fixed.push({id: uid(), type: 'gider', name: v.name, amount: v.amount, day, cat: v.cat}); save(); render(); },
-    f && (() => { S.fixed = S.fixed.filter(x => x !== f); save(); render(); toast('Sabit ödeme silindi'); }));
+      const o = {name: v.name, type: v.type, amount: v.amount, day, cat: v.cat, auto: v.auto === '1'};
+      if (f) Object.assign(f, o); else S.fixed.push({id: uid(), ...o}); save(); autoFixed(); render(); },
+    f && (() => { S.fixed = S.fixed.filter(x => x !== f); save(); render(); toast('Sabit kalem silindi'); }));
 }
 function editQuick(q) {
   formModal(q ? 'Şablonu düzenle' : 'Yeni şablon',
@@ -1317,7 +1404,7 @@ function addQuick(q) {
 function payFixed(f) {
   const day = Math.min(f.day, daysIn(cur.y, cur.m));
   const date = isCurMonth() && day > now0.getDate() ? todayStr() : `${cur.y}-${pad(cur.m + 1)}-${pad(day)}`;
-  const rec = {id: uid(), type: 'gider', cat: f.cat, amount: f.amount, note: f.name, date, method: 'kart', fixedId: f.id, ts: Date.now()};
+  const rec = {id: uid(), type: f.type || 'gider', cat: f.cat, amount: f.amount, note: f.name, date, method: 'kart', fixedId: f.id, ts: Date.now()};
   S.tx.push(rec); return rec;
 }
 document.addEventListener('click', e => {
@@ -1339,19 +1426,28 @@ document.addEventListener('click', e => {
     else if (act === 'suggestBudgets' || act === 'applySuggest') { const sg = suggestedBudgets(); if (!Object.keys(sg).length) { toast('Öneri için önce birkaç harcama gir.'); return; }
       const old = JSON.parse(JSON.stringify(S.budgets)); S.budgets.cats = sg; S.budgets.total = Object.values(sg).reduce((x, y) => x + y, 0); save(); closeModal(); render();
       toast('Bütçeler son 3 ayın ortalamasına göre ayarlandı', {label: 'Geri al', fn: () => { S.budgets = old; save(); render(); }}); }
-    else if (act === 'payAll') { const paid = new Set(monthTx(cur.y, cur.m).filter(x => x.fixedId).map(x => x.fixedId)); const recs = S.fixed.filter(f => !paid.has(f.id)).map(payFixed); save(); render(); buzz(12); toast(`${recs.length} sabit ödeme işlendi`, undoIds(recs.map(r => r.id))); }
+    else if (act === 'payAll') { const paid = new Set(monthTx(cur.y, cur.m).filter(x => x.fixedId).map(x => x.fixedId)); const recs = S.fixed.filter(f => !paid.has(f.id)).map(payFixed); save(); render(); buzz(12); toast(`${recs.length} sabit kalem işlendi`, undoIds(recs.map(r => r.id))); }
     else if (act === 'importText') doImport($('#impText').value);
-    else if (act === 'csvDl') download(`kese-${todayStr()}.csv`, csvText(';'), 'text/csv;charset=utf-8');
-    else if (act === 'csvCopy') copyOut(csvText('\t'), 'Tablo');
-    else if (act === 'jsonDl') download(`kese-yedek-${todayStr()}.json`, JSON.stringify(S), 'application/json');
-    else if (act === 'jsonCopy') copyOut(JSON.stringify(S), 'Yedek');
+    else if (act === 'csvDl') { download(`kese-${todayStr()}.csv`, csvText(';'), 'text/csv;charset=utf-8'); markBackup(); }
+    else if (act === 'csvCopy') { copyOut(csvText('\t'), 'Tablo'); markBackup(); }
+    else if (act === 'jsonDl') { download(`kese-yedek-${todayStr()}.json`, JSON.stringify(S), 'application/json'); markBackup(); }
+    else if (act === 'jsonCopy') { copyOut(JSON.stringify(S), 'Yedek'); markBackup(); }
+    else if (act === 'snoozeBackup') { S.backupSnooze = Date.now() + 7 * 864e5; save(); render(); }
+    else if (act === 'setPin') formModal(getPin() ? 'PIN\'i değiştir' : 'PIN koy', [{k: 'p1', label: '4 haneli PIN', t: 'pin'}, {k: 'p2', label: 'PIN\'i tekrar yaz', t: 'pin'}], {},
+      v => { if (!/^\d{4}$/.test(v.p1)) return 'PIN 4 rakam olmalı.'; if (v.p1 !== v.p2) return 'İki PIN aynı değil.';
+        hashPin(v.p1).then(hh => { try { localStorage.setItem(KEY + '.pin', hh); } catch (e) {} render(); toast('Kilit açıldı. Uygulamayı her açtığında PIN sorulacak.'); }); });
+    else if (act === 'removePin') ask('Kilit kaldırılsın mı?', 'Uygulama açılırken artık PIN sorulmayacak.', 'Kaldır', () => { try { localStorage.removeItem(KEY + '.pin'); } catch (e) {} render(); toast('Kilit kaldırıldı'); });
     return;
   }
   let b;
   if ((b = t.closest('[data-quick]'))) { const q = S.quick.find(x => x.id === b.dataset.quick); if (q) addQuick(q); }
-  else if ((b = t.closest('[data-pay]'))) { const f = S.fixed.find(x => x.id === b.dataset.pay); if (f) { const rec = payFixed(f); save(); render(); buzz(12); toast(`${f.name} ödendi olarak işlendi`, undoIds([rec.id])); } }
-  else if ((b = t.closest('[data-tx]'))) { const x = S.tx.find(y => y.id === b.dataset.tx); if (x) openSheet({tx: x}); }
-  else if ((b = t.closest('[data-cat]'))) { listFilter = {q: '', type: 'gider', cat: b.dataset.cat}; go('hareketler'); }
+  else if ((b = t.closest('[data-pay]'))) { const f = S.fixed.find(x => x.id === b.dataset.pay); if (f) { const rec = payFixed(f); save(); render(); buzz(12); toast(`${f.name} işlendi`, undoIds([rec.id])); } }
+  else if ((b = t.closest('[data-tx]'))) { const x = S.tx.find(y => y.id === b.dataset.tx); if (x) { if (!modal.hidden) closeModal(); openSheet({tx: x}); } }
+  else if ((b = t.closest('[data-cat]'))) openCat(b.dataset.cat);
+  else if ((b = t.closest('[data-catlist]'))) { closeModal(); listFilter = {q: '', type: 'all', cat: b.dataset.catlist, all: false}; go('hareketler'); }
+  else if ((b = t.closest('[data-catadd]'))) { const c = catById(b.dataset.catadd); closeModal(); openSheet({type: c.type, cat: c.id}); }
+  else if ((b = t.closest('[data-fall]'))) { listFilter.all = !listFilter.all; render(); }
+  else if ((b = t.closest('[data-themeset]'))) { theme = b.dataset.themeset; saveUi(); if (theme === 'system') document.documentElement.removeAttribute('data-theme'); applyTheme(); render(); }
   else if ((b = t.closest('[data-go]'))) go(b.dataset.go);
   else if ((b = t.closest('[data-ft]'))) { listFilter.type = b.dataset.ft; render(); }
   else if ((b = t.closest('[data-gdep]'))) { const g = S.goals.find(x => x.id === b.dataset.gdep); if (g) goalMove(g, 1); }
@@ -1385,7 +1481,37 @@ function toast(msg, action) {
 window.addEventListener('kese-updated', () => toast('Kese güncellendi', {label: 'Yenile', fn: () => location.reload()}));
 
 let rT; window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { if (view === 'ozet') render(); }, 150); });
-document.addEventListener('visibilitychange', () => { if (!document.hidden && dstr(new Date()) !== dstr(now0) && sheet.hidden && modal.hidden) location.reload(); });
+/* ================= backup + lock ================= */
+function markBackup() { S.lastBackup = Date.now(); S.backupSnooze = 0; save(); }
+async function hashPin(p) {
+  try { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('kese:' + p)); return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  catch (e) { let h = 7; for (const ch of 'kese:' + p) h = (h * 31 + ch.charCodeAt(0)) | 0; return 'h' + h; }
+}
+function getPin() { try { return localStorage.getItem(KEY + '.pin'); } catch (e) { return null; } }
+const lock = $('#lock');
+let pinBuf = '', hiddenAt = 0;
+const paintDots = () => $$('.dots i', lock).forEach((d, i) => d.classList.toggle('on', i < pinBuf.length));
+function lockNow() { if (!getPin()) return; pinBuf = ''; paintDots(); $('#lockErr').textContent = ''; lock.hidden = false; }
+async function pinKey(k) {
+  if (k === '⌫' || k === 'Backspace') pinBuf = pinBuf.slice(0, -1); else if (/^\d$/.test(k) && pinBuf.length < 4) pinBuf += k; else return;
+  buzz(4); paintDots();
+  if (pinBuf.length < 4) return;
+  if (await hashPin(pinBuf) === getPin()) { lock.hidden = true; pinBuf = ''; buzz(10); return; }
+  const d = $('.dots', lock); d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake');
+  $('#lockErr').textContent = 'PIN yanlış, tekrar dene.'; buzz([30, 40, 30]); pinBuf = ''; setTimeout(paintDots, 300);
+}
+$('#lockPad').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pinKey(b.textContent.trim()); });
+document.addEventListener('keydown', e => { if (!lock.hidden) { e.preventDefault(); e.stopPropagation(); pinKey(e.key); } }, true);
+$('#lockForgot').addEventListener('click', () => ask('PIN\'i mi unuttun?', 'PIN hiçbir yere kaydedilmediği için kurtarılamaz. Kilidi kaldırmanın tek yolu bu cihazdaki tüm Kese verilerini silmek. Yedeğin varsa sonra geri yükleyebilirsin.', 'Verileri sil ve kilidi kaldır', () => {
+  try { localStorage.removeItem(KEY + '.pin'); } catch (e) {} S = blank(); S.since = Date.now(); S.autoDone = {}; save(); lock.hidden = true; go('ozet'); toast('Veriler silindi, kilit kaldırıldı'); }));
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (dstr(new Date()) !== dstr(now0) && sheet.hidden && modal.hidden && lock.hidden) { location.reload(); return; }
+  if (hiddenAt && Date.now() - hiddenAt > 60000) lockNow();
+  if (autoFixed()) render();
+});
+lockNow();
+autoFixed();
 render(true);
 })();
 </script>
