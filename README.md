@@ -1,4 +1,4 @@
-# Kese · Gelir Gider Takibi
+# Hesap Kitap · Gelir Gider Takibi
 
 Aylık gelir ve giderleri telefondan birkaç dokunuşla kaydetmek, paranın hangi kaleme gittiğini görmek ve bir sonraki ayı buna göre planlamak için yapılmış uygulama.
 
@@ -20,7 +20,7 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Kategori detayı** | Bir kategoriye dokununca son 6 ayın grafiği, ortalamaya göre fark, o kategorinin bütçesi ve bu ayki kayıtları açılır. |
 | **Tüm aylarda arama** | Hareketler'de "Tüm aylar" ile geçmiş tüm kayıtlarda arama. |
 | **Yedek hatırlatıcı · PIN kilidi · Tema** | 30 gündür yedek alınmadıysa hatırlatır. İsteğe bağlı 4 haneli PIN kilidi. Açık / koyu / telefona göre tema. |
-| **Fiş / hesap fotoğrafı** | Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çek; işletme, tutar, tarih ve kategori (ör. Mado → Yeme-içme) okunup kayıt **kendiliğinden eklenir**. Okuma telefonda ücretsiz yapılır; Ayarlar → Fiş okuma'dan kendi Anthropic API anahtarını eklersen Claude ile çok daha isabetli okunur (fiş başına ~0,01–0,02 $). Fotoğraflar yalnızca o telefonda saklanır. |
+| **Fiş / hesap fotoğrafı** | Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çek; işletme, tutar, tarih ve kategori (ör. Mado → Yeme-içme) okunup kayıt **kendiliğinden eklenir**. Okuma tamamen telefonda ve ücretsiz yapılır, anahtar ya da hesap gerekmez. Fotoğraflar yalnızca o telefonda saklanır. |
 | **Günlük / Sabit ayrımı** | Ana ekran yalnızca günlük harcamalara odaklanır; kira, fatura, abonelik, maaş, taksitler ve kart ekstreleri Hareketler → **Sabit harcamalar** sekmesindedir. |
 | **Hatırlatmalar** | Ana sayfanın üstünde: yaklaşan sabit ödemeler, dolmak üzere olan bütçeler, kart son ödeme günleri, vadesi gelen borçlar, akşam hâlâ kayıt girilmediyse uyarı. |
 | **Ay sonu devri** | Önceki aydan para arttıysa hedefe aktarma ya da bu aya devretme seçeneği. |
@@ -31,7 +31,7 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Döviz & altın** | Dolar, euro, gram ve çeyrek altın varlıkları ile döviz/altın cinsinden hedefler; güncel kurla TL karşılığı (kur elle de girilebilir). |
 | **Kısayollar ve tanıtım** | Android'de simgeye basılı tutunca "Harcama ekle / Hızlı yaz"; ilk açılışta 3 ekranlık kısa tur. |
 | **Bütçe** | Aylık toplam ve kategori bazında tavan. "Günde ne kadar harcayabilirim" hesabı, Yolunda / Sınıra yakın / Aşıldı durumları. |
-| **Başlangıç şablonları** | Öğrenci, Bekar çalışan, Aile, Serbest çalışan. Her biri hazır bütçe, sabit ödeme ve hızlı ekle listesiyle gelir. |
+| **Açılır-kapanır ayarlar** | Sabit kalemler, hızlı ekle, kartlar, etiketler ve kategoriler başlığa dokununca açılıp kapanır. |
 | **E-tablodan aktar** | Google E-Tablolar veya Excel'den satırları kopyalayıp yapıştır (Tarih, Açıklama, Tutar, Kategori). `1.250,50` ve `03.09.2026` gibi Türkçe biçimleri tanır, kategoriyi açıklamadan tahmin eder (Migros → Market, Netflix → Abonelikler). |
 | **Yedek** | Excel için CSV, yedek dosyası (JSON) ve yedekten geri yükleme. |
 
@@ -44,6 +44,16 @@ Uygulama `https://abdurrahmankayaart.github.io/Gelir---Gider-Tablosu/` adresinde
 Ana ekrandan açılınca tam ekran uygulama gibi çalışır, internet olmadan da açılır.
 
 > Veriler yalnızca o cihazda tutulur. Tarayıcı verilerini silersen kayıtlar da gider; **Ayarlar → Yedek dosyası indir** ile ayda bir yedek al.
+
+## App Store ve Google Play
+
+Uygulama Capacitor ile iOS ve Android uygulaması olarak paketlenir (`ios/`, `android/`). Her gönderimde GitHub Actions test APK'sı üretir ve iOS derlemesini kontrol eder. Mağazaya yükleme adımları: [MAGAZA.md](MAGAZA.md). Gizlilik politikası: [privacy.html](privacy.html).
+
+```
+npm install
+npm run android   # Android Studio'da açar
+npm run ios       # Xcode'da açar (Mac gerekir)
+```
 
 ## Dosyalar
 

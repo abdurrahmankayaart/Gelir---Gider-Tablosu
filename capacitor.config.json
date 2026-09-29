@@ -1,0 +1,12 @@
+{
+  "appId": "com.hesapkitap.app",
+  "appName": "Hesap Kitap",
+  "webDir": "www",
+  "backgroundColor": "#F5F6F8",
+  "ios": {
+    "contentInset": "never"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

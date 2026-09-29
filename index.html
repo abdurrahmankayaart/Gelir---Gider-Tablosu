@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#0F1113" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Kese">
+<meta name="apple-mobile-web-app-title" content="Hesap Kitap">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -16,7 +16,7 @@
 </head>
 <body>
 <!-- APP START -->
-<title>Kese</title>
+<title>Hesap Kitap</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
@@ -68,11 +68,11 @@ h3{font-size:16px;font-weight:700}
 
 /* header */
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:8px;padding-block:10px;margin-inline:-16px;padding-inline:16px}
-.brand{display:flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:-.02em}
+.brand{display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:-.025em;white-space:nowrap;min-width:0}
 .brand svg{width:28px;height:28px}
 .month{display:flex;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:2px}
-.month button{border:0;background:none;width:34px;height:34px;border-radius:999px;display:grid;place-items:center;color:var(--ink-2)}
-.month span{min-width:98px;text-align:center;font-weight:700;font-size:14px}
+.month button{border:0;background:none;width:30px;height:32px;border-radius:999px;display:grid;place-items:center;color:var(--ink-2)}
+.month span{min-width:84px;text-align:center;font-weight:700;font-size:13.5px;white-space:nowrap}
 .icon-btn{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:var(--ink-2);flex:none}
 .icon-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:transparent}
 
@@ -381,6 +381,11 @@ textarea.inp{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,mono
 .tour-dots i.on{width:22px;background:var(--accent)}
 .yr-nav{display:flex;align-items:center;gap:8px}
 .yr-nav button{border:1px solid var(--line);background:var(--surface);border-radius:99px;width:32px;height:32px;display:grid;place-items:center;color:var(--ink-2)}
+details.fold>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;-webkit-user-select:none;user-select:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary .i{transition:transform .2s;color:var(--muted)}
+details.fold[open]>summary .i{transform:rotate(180deg)}
+.fold-b{margin-top:12px}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:var(--bg);border-radius:16px;padding:11px 12px 11px 16px;display:flex;gap:14px;align-items:center;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:calc(100% - 32px);width:max-content;animation:toastin .25s cubic-bezier(.2,.9,.25,1)}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,12px)}}
 .toast button{border:0;background:none;color:var(--accent);font-weight:800;white-space:nowrap}
@@ -393,7 +398,7 @@ textarea.inp{min-height:110px;font-family:ui-monospace,SFMono-Regular,Menlo,mono
   <header class="top">
     <div class="brand">
       <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--accent)"/><path d="M11.5 11c0-1.6 1.6-3 4.5-3s4.5 1.4 4.5 3" fill="none" stroke="var(--on-accent)" stroke-width="2" stroke-linecap="round"/><path d="M8.5 14c0-1.5 1.1-2.8 2.9-2.8h9.2c1.8 0 2.9 1.3 2.9 2.8v6.5c0 2.1-1.8 3.5-3.6 3.5h-7.8c-1.8 0-3.6-1.4-3.6-3.5z" fill="var(--on-accent)"/><circle cx="19.5" cy="17.8" r="1.6" fill="var(--accent)"/></svg>
-      Kese
+      Hesap Kitap
     </div>
     <div class="month" role="group" aria-label="Ay seçimi">
       <button id="prevM" aria-label="Önceki ay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
@@ -563,6 +568,7 @@ const ICONS = {
   repeat: '<path d="M17 2l3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4"/>',
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
   x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
   camera: '<path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.5"/>'
 };
 const svgI = (name, size = 20) => `<svg class="i" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
@@ -594,7 +600,8 @@ function applyProfile(s, key) {
   s.fixed = p.fixed.map(([name, cat, amount, day, type]) => ({id: uid(), name, cat, amount, day, type: type || 'gider', auto: false}));
   s.quick = p.quick.map(([name, cat, amount, type]) => ({id: uid(), name, cat, amount, type: type || 'gider'}));
 }
-const blank = () => ({v: 3, tx: [], budgets: {total: 0, cats: {}}, fixed: [], quick: [], customCats: [], goals: [], cards: [], debts: [], assets: [], rollover: {}, dismissed: {}, profile: null, sample: false});
+const DEFAULT_QUICK = () => [['Kahve', 'yemek', 0], ['Yemek', 'yemek', 0], ['Market', 'market', 0], ['Ulaşım', 'ulasim', 0], ['Maaş', 'maas', 0, 'gelir']].map(([name, cat, amount, type]) => ({id: uid(), name, cat, amount, type: type || 'gider'}));
+const blank = () => ({v: 3, tx: [], budgets: {total: 0, cats: {}}, fixed: [], quick: DEFAULT_QUICK(), customCats: [], goals: [], cards: [], debts: [], assets: [], rollover: {}, dismissed: {}, profile: null, sample: false});
 
 /* ================= sample data ================= */
 function makeSample() {
@@ -805,7 +812,7 @@ function renderOzet(el) {
   let h = '';
 
   if (S.sample) h += `<div class="banner"><div><b>Örnek verilerle açıldı.</b> Uygulamayı kurcalayabilmen için 6 aylık uydurma kayıt ve iki birikim hedefi ekledik. Kendi harcamalarına geçmeden önce sil.</div>
-    <div class="row"><button class="btn sm dark" data-act="clearSample">Örnekleri sil, sıfırdan başla</button><button class="btn sm" data-act="goSettings">Başlangıç şablonu seç</button></div></div>`;
+    <div class="row"><button class="btn sm dark" data-act="clearSample">Örnekleri sil, sıfırdan başla</button></div></div>`;
   const lb = S.lastBackup || S.since, bdays = Math.floor((Date.now() - lb) / 864e5);
   if (!S.sample && S.tx.length >= 20 && bdays >= 30 && Date.now() > (S.backupSnooze || 0)) h += `<div class="banner" style="background:var(--accent-soft)"><div><b style="color:var(--accent)">${S.lastBackup ? bdays + ' gündür yedek almadın.' : 'Henüz hiç yedek almadın.'}</b> Kayıtların yalnızca bu telefonda duruyor; telefon kaybolursa ya da tarayıcı verisi silinirse gider.</div>
     <div class="row"><button class="btn sm primary" data-act="jsonDl">Şimdi yedek al</button><button class="btn sm" data-act="snoozeBackup">Bir hafta sonra hatırlat</button></div></div>`;
@@ -951,7 +958,7 @@ function wireQuickText() {
   $('#qgo').addEventListener('click', () => { if (!inp.value.trim()) { inp.focus(); return; } commitQuick(inp); });
   prev.addEventListener('click', e => { if (e.target.id === 'qedit') { const p = parseQuick(inp.value); openSheet({type: p.type, cat: p.cat, amount: p.amount, note: p.note, date: p.date, method: p.method, inst: p.inst, tags: p.tags}); inp.value = ''; paint(); } });
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = $('#qmic');
-  if (SR) {
+  if (SR && !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) {
     mic.hidden = false;
     mic.addEventListener('click', () => {
       if (mic._rec) { mic._rec.stop(); return; }
@@ -1392,8 +1399,11 @@ function openYear() {
 }
 
 /* ================= AYARLAR ================= */
+const openFolds = new Set();
+const fold = (key, title, meta, body) => `<details class="card fold" data-fold="${key}" ${openFolds.has(key) ? 'open' : ''}><summary><h2>${title}</h2><span class="row" style="gap:8px">${meta ? `<span class="pill mute">${meta}</span>` : ''}${svgI('chev', 18)}</span></summary><div class="fold-b">${body}</div></details>`;
+document.addEventListener('toggle', e => { const d = e.target; if (d.matches && d.matches('details[data-fold]')) { if (d.open) openFolds.add(d.dataset.fold); else openFolds.delete(d.dataset.fold); } }, true);
 function renderSettings(el) {
-  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const standalone = NATIVE || matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   const plist = PEOPLE.list.length ? PEOPLE.list : [ME];
   el.innerHTML = `<section><h1 style="font-size:26px">Ayarlar</h1></section>
   <section class="card"><div class="sec-h"><h2>Kişiler</h2><button class="btn sm" data-act="addPerson">+ Kişi ekle</button></div>
@@ -1401,25 +1411,19 @@ function renderSettings(el) {
     <div>${plist.map(p => `<div class="set-i">${avatar(p)}<div><div class="t">${esc(p.name || 'İsimsiz')}</div><div class="m">${p.id === ME.id ? 'Şu an açık' : 'Ayrı kayıtlar'}</div></div>
       ${p.id === ME.id ? '<button class="btn sm" data-act="rename">Adımı değiştir</button>' : `<div class="row"><button class="btn sm" data-switch="${p.id}">Geç</button><button class="btn sm danger" data-delperson="${p.id}">Sil</button></div>`}</div>`).join('')}</div></section>
   ${standalone ? '' : `<section class="card" style="background:var(--accent-soft);border:0"><h2>Telefona uygulama olarak kur</h2><p class="hint" style="margin-top:6px;color:var(--ink-2)"><b>iPhone:</b> Safari'de Paylaş → Ana Ekrana Ekle. <b>Android:</b> Chrome'da ⋮ → Uygulamayı yükle. Ana ekrandan tam ekran açılır, internet olmadan da çalışır. Android'de simgeye basılı tutunca “Harcama ekle” kısayolu da çıkar.</p></section>`}
-  <section class="card"><div class="sec-h"><h2>Başlangıç şablonları</h2></div><p class="hint" style="margin-bottom:12px">Bütçeleri, sabit ödemeleri ve tek dokunuşla ekle düğmelerini hazırlar. Kayıtların silinmez.</p>${profileGrid()}</section>
-  <section class="card"><div class="sec-h"><h2>Sabit kalemler</h2><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
-    <p class="hint" style="margin-bottom:6px">Kira, fatura, abonelik, maaş gibi her ay tekrar edenler. “Otomatik” olanlar günü gelince kendiliğinden eklenir.</p>
-    <div>${S.fixed.length ? [...S.fixed].sort((a, b) => a.day - b.day).map(f => { const c = catById(f.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">${f.type === 'gelir' ? 'Gelir +' : ''}${money(f.amount)} · ayın ${f.day}. günü</div></div><button class="btn sm" data-editfixed="${f.id}">Düzenle</button></div>`; }).join('') : '<p class="hint">Henüz sabit kalem yok.</p>'}</div></section>
-  <section class="card"><div class="sec-h"><h2>Fiş okuma</h2>${aiKey() ? '<span class="pill good">Yapay zeka açık</span>' : '<span class="pill mute">Telefonda</span>'}</div>
-    <p class="hint" style="margin-bottom:10px">Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çekince tutar, tarih, işletme ve kategori kendiliğinden girilir. Normalde okuma telefonda yapılır, ücretsizdir ama buruşuk fişlerde yanılabilir.</p>
-    <p class="hint" style="margin-bottom:10px"><b>Daha isabetli okuma:</b> Kendi Anthropic API anahtarını eklersen fotoğraf okunmak için Anthropic’e (Claude) gönderilir. Fiş başına yaklaşık 0,01–0,02 dolar ücret çıkar. Anahtar yalnızca bu telefonda saklanır. Anahtarı console.anthropic.com → API Keys bölümünden alabilirsin.</p>
-    <div class="row">${aiKey() ? '<button class="btn sm" data-act="aiKey">Anahtarı değiştir</button><button class="btn sm danger" data-act="aiKeyDel">Anahtarı kaldır</button>' : '<button class="btn sm primary" data-act="aiKey">API anahtarı ekle</button>'}</div></section>
-  <section class="card"><div class="sec-h"><h2>Kartlarım</h2><button class="btn sm" data-act="newCard">+ Kart ekle</button></div>
-    <p class="hint" style="margin-bottom:6px">Kredi kartının kesim ve son ödeme gününü gir; ana sayfada dönem harcamasını ve ekstreyi gösterelim. Kart seçilmeden girilen kart harcamaları ilk karta sayılır.</p>
-    <div>${S.cards.length ? S.cards.map(c => `<div class="set-i" style="--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Kesim ${c.cutDay} · son ödeme ${c.dueDay}${c.limit ? ' · limit ' + money(c.limit) : ''}</div></div><button class="btn sm" data-editcard="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Henüz kart eklenmedi.</p>'}</div></section>
-  <section class="card"><div class="sec-h"><h2>Etiketler</h2></div>
-    <p class="hint" style="margin-bottom:6px">Kayıt eklerken “#tatil” gibi etiket koy; bir etiketin toplam maliyetini burada gör.</p>
-    <div>${(() => { const tg = Object.entries(allTags()).sort((a, b) => b[1].sum - a[1].sum); return tg.length ? tg.map(([t, o]) => `<button class="set-i" data-tagopen="${esc(t)}" style="width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding-inline:0"><span class="bub" style="--c:#12805C"><b style="font-size:15px">#</b></span><span><span class="t" style="display:block">${esc(t)}</span><span class="m" style="display:block">${o.n} kayıt</span></span><b class="num">${money(o.sum)}</b></button>`).join('') : '<p class="hint">Henüz etiket yok.</p>'; })()}</div></section>
-  <section class="card"><div class="sec-h"><h2>Tek dokunuşla ekle</h2><button class="btn sm" data-act="newQuick">+ Ekle</button></div>
-    <p class="hint" style="margin-bottom:6px">Tutar yazarsan tek dokunuşla eklenir; boş bırakırsan kategori seçili giriş ekranı açılır.</p>
-    <div>${S.quick.map(q => { const c = catById(q.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(q.name)}</div><div class="m num">${q.amount ? money(q.amount) : 'tutar sorulur'} · ${esc(c.name)}</div></div><button class="btn sm" data-editquick="${q.id}">Düzenle</button></div>`; }).join('')}</div></section>
-  <section class="card"><div class="sec-h"><h2>Kendi kategorilerin</h2><button class="btn sm" data-act="newCat">+ Ekle</button></div>
-    <div>${S.customCats.length ? S.customCats.map(c => `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(c.name)}</div><div class="m">${c.type === 'gelir' ? 'Gelir' : 'Gider'}</div></div><button class="btn sm" data-editcat="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Listede olmayan bir kalem varsa (örn. Araba bakımı, Kreş) buradan ekle.</p>'}</div></section>
+  ${fold('fixed', 'Sabit kalemler', S.fixed.length ? S.fixed.length + ' kalem' : '', `<p class="hint" style="margin-bottom:6px">Kira, fatura, abonelik, maaş gibi her ay tekrar edenler. “Otomatik” olanlar günü gelince kendiliğinden eklenir.</p>
+    <div>${S.fixed.length ? [...S.fixed].sort((a, b) => a.day - b.day).map(f => { const c = catById(f.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">${f.type === 'gelir' ? 'Gelir +' : ''}${money(f.amount)} · ayın ${f.day}. günü</div></div><button class="btn sm" data-editfixed="${f.id}">Düzenle</button></div>`; }).join('') : '<p class="hint">Henüz sabit kalem yok.</p>'}</div>
+    <button class="btn sm" data-act="newFixed" style="margin-top:10px">+ Sabit kalem ekle</button>`)}
+  ${fold('quick', 'Tek dokunuşla ekle', S.quick.length ? S.quick.length + ' şablon' : '', `<p class="hint" style="margin-bottom:6px">Tutar yazarsan tek dokunuşla eklenir; boş bırakırsan kategori seçili giriş ekranı açılır.</p>
+    <div>${S.quick.map(q => { const c = catById(q.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(q.name)}</div><div class="m num">${q.amount ? money(q.amount) : 'tutar sorulur'} · ${esc(c.name)}</div></div><button class="btn sm" data-editquick="${q.id}">Düzenle</button></div>`; }).join('')}</div>
+    <button class="btn sm" data-act="newQuick" style="margin-top:10px">+ Şablon ekle</button>`)}
+  ${fold('cards', 'Kartlarım', S.cards.length ? S.cards.length + ' kart' : '', `<p class="hint" style="margin-bottom:6px">Kredi kartının kesim ve son ödeme gününü gir; dönem harcamasını ve ekstreyi Sabit harcamalar sekmesinde gösterelim. Kart seçilmeden girilen kart harcamaları ilk karta sayılır.</p>
+    <div>${S.cards.length ? S.cards.map(c => `<div class="set-i" style="--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Kesim ${c.cutDay} · son ödeme ${c.dueDay}${c.limit ? ' · limit ' + money(c.limit) : ''}</div></div><button class="btn sm" data-editcard="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Henüz kart eklenmedi.</p>'}</div>
+    <button class="btn sm" data-act="newCard" style="margin-top:10px">+ Kart ekle</button>`)}
+  ${fold('tags', 'Etiketler', Object.keys(allTags()).length ? Object.keys(allTags()).length + ' etiket' : '', `<p class="hint" style="margin-bottom:6px">Kayıt eklerken “#tatil” gibi etiket koy; bir etiketin toplam maliyetini burada gör.</p>
+    <div>${(() => { const tg = Object.entries(allTags()).sort((a, b) => b[1].sum - a[1].sum); return tg.length ? tg.map(([t, o]) => `<button class="set-i" data-tagopen="${esc(t)}" style="width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding-inline:0"><span class="bub" style="--c:#12805C"><b style="font-size:15px">#</b></span><span><span class="t" style="display:block">${esc(t)}</span><span class="m" style="display:block">${o.n} kayıt</span></span><b class="num">${money(o.sum)}</b></button>`).join('') : '<p class="hint">Henüz etiket yok.</p>'; })()}</div>`)}
+  ${fold('cats', 'Kendi kategorilerin', S.customCats.length ? S.customCats.length + ' kategori' : '', `<div>${S.customCats.length ? S.customCats.map(c => `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(c.name)}</div><div class="m">${c.type === 'gelir' ? 'Gelir' : 'Gider'}</div></div><button class="btn sm" data-editcat="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Listede olmayan bir kalem varsa (örn. Araba bakımı, Kreş) buradan ekle.</p>'}</div>
+    <button class="btn sm" data-act="newCat" style="margin-top:10px">+ Kategori ekle</button>`)}
   <section class="card"><div class="sec-h"><h2>E-tablodan aktar</h2></div>
     <p class="hint" style="margin-bottom:10px">Eski tablondan satırları kopyala, buraya yapıştır. Sütunlar: <b>Tarih, Açıklama, Tutar, Kategori</b> (kategori ve başlık satırı isteğe bağlı).</p>
     <textarea class="inp" id="impText" placeholder="03.09.2026	Migros	1.250,50	Market&#10;05.09.2026	Elektrik faturası	845	Faturalar"></textarea>
@@ -1438,7 +1442,7 @@ function renderSettings(el) {
   <section class="card"><div class="sec-h"><h2>Sıfırla</h2></div><div class="row">
     ${S.sample ? '<button class="btn sm" data-act="clearSample">Örnek verileri sil</button>' : '<button class="btn sm" data-act="loadSample">Örnek verileri yükle</button>'}
     <button class="btn sm danger" data-act="wipe">Tüm verileri sil</button><button class="btn sm" data-act="tour">Tanıtım turunu göster</button></div>
-    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 3.1</p></section>`;
+    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Hesap Kitap 3.2</p></section>`;
   $('#impFile', el).addEventListener('change', e => readFile(e.target.files[0], doImport));
   $('#restoreFile', el).addEventListener('change', e => readFile(e.target.files[0], restore));
 }
@@ -1512,19 +1516,28 @@ function csvText(sep) {
     rows.push([`${d}.${m}.${y}`, t.type === 'gelir' ? 'Gelir' : 'Gider', catById(t.cat).name, t.note || '', String(t.amount).replace('.', ','), t.method === 'nakit' ? 'Nakit' : 'Kart', t.inst ? `${t.inst.i}/${t.inst.n}` : '']); });
   return rows.map(r => r.map(q).join(sep)).join('\n');
 }
+// Inside the store app (Capacitor) a plain download does nothing, so hand the file to the share sheet instead.
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 function download(name, text, mime) {
+  if (NATIVE || /iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    try {
+      const file = new File(['\ufeff' + text], name, {type: mime});
+      if (navigator.canShare && navigator.canShare({files: [file]})) { navigator.share({files: [file], title: name}).catch(() => {}); return; }
+    } catch (e) {}
+    if (NATIVE) { copyOut(text, name.endsWith('.csv') ? 'Tablo' : 'Yedek'); return; }
+  }
   try { const blob = new Blob(['﻿' + text], {type: mime}), a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast('İndirme başlatıldı'); }
   catch (e) { toast('İndirme engellendi. “Kopyala” seçeneğini kullan.'); }
 }
 function copyOut(text, label) {
   const box = $('#copyBox');
-  const fallback = () => { box.hidden = false; box.value = text; box.focus(); box.select(); toast('Metin seçildi, elle kopyalayabilirsin.'); };
+  const fallback = () => { if (!box) { toast('Kopyalanamadı. Ayarlar → Yedek bölümünden tekrar dene.'); return; } box.hidden = false; box.value = text; box.focus(); box.select(); toast('Metin seçildi, elle kopyalayabilirsin.'); };
   try { navigator.clipboard.writeText(text).then(() => toast(label + ' panoya kopyalandı'), fallback); } catch (e) { fallback(); }
 }
 function restore(txt) {
   try { const d = JSON.parse(txt); if (!Array.isArray(d.tx)) throw 0;
     ask('Yedek geri yüklensin mi?', `Yedekte ${d.tx.length} kayıt var. Bu cihazdaki veriler yedeğin içeriğiyle değişecek.`, 'Geri yükle', () => { S = Object.assign(blank(), d); S.goals = S.goals || []; save(); render(); toast('Yedek geri yüklendi'); });
-  } catch (e) { toast('Bu dosya bir Kese yedeği değil.'); }
+  } catch (e) { toast('Bu dosya bir Hesap Kitap yedeği değil.'); }
 }
 
 /* ================= receipt photos (IndexedDB) + on-device reading ================= */
@@ -1568,64 +1581,40 @@ function parseReceipt(text) {
   const nice = store ? store.replace(/İ/g, 'i').replace(/I/g, 'i').toLowerCase().replace(/[^\p{L}\d &.'-]/gu, '').replace(/\s+(tic(aret)?|san(ayi)?|a\.?\s?ş|a\.?\s?s|ltd|şti|gıda|mağazacılık|ve)\b.*$/u, '').replace(/\s+/g, ' ').trim() : '';
   return {amount, date, store: cap(nice)};
 }
-async function readReceipt(canvas) { const T = await loadTess(); const out = await T.recognize(canvas, 'tur'); return parseReceipt(out && out.data ? out.data.text : ''); }
-/* Optional: read receipts with Claude when the user adds their own API key (stored only on this device) */
-const aiKey = () => { try { return localStorage.getItem('kese.aikey') || ''; } catch (e) { return ''; } };
-let sdkP = null;
-const loadSDK = () => sdkP || (sdkP = import('https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.129.0/+esm').then(m => m.default || m.Anthropic).catch(e => { sdkP = null; throw e; }));
-const blobToB64 = b => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(b); });
-async function readReceiptAI(blob) {
-  const Anthropic = await loadSDK();
-  const client = new Anthropic({apiKey: aiKey(), dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60000});
-  const cats = catList('gider');
-  const schema = {type: 'object', additionalProperties: false, required: ['is_receipt', 'store', 'amount', 'date', 'category'],
-    properties: {is_receipt: {type: 'boolean'}, store: {type: 'string'}, amount: {type: 'number'}, date: {type: 'string'}, category: {type: 'string', enum: cats.map(c => c.id)}}};
-  const res = await client.beta.messages.create({
-    model: 'claude-opus-5-5',
-    max_tokens: 4000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    output_config: {effort: 'low', format: {type: 'json_schema', schema}},
-    system: 'Türkiye’deki fiş, adisyon ve hesap fotoğraflarından bir harcama kaydı çıkarıyorsun. '
-      + 'amount: ödenen toplam tutar (KDV dahil genel toplam; varsa servis ücreti ve bahşiş dahil), TL cinsinden sayı. '
-      + 'store: işletmenin günlük dilde bilinen kısa adı, örn. "Mado", "Migros", "Opet" (unvan eklerini, şube adını yazma). '
-      + 'date: fişteki tarih, YYYY-AA-GG biçiminde; okunmuyorsa boş bırak. '
-      + 'category: listedeki kimliklerden en uygunu; restoran, kafe ve tatlıcı yemek sayılır. '
-      + 'Görsel bir fiş ya da hesap değilse is_receipt false olsun.',
-    messages: [{role: 'user', content: [
-      {type: 'image', source: {type: 'base64', media_type: blob.type || 'image/jpeg', data: await blobToB64(blob)}},
-      {type: 'text', text: `Bugünün tarihi: ${todayStr()}\nKategoriler:\n${cats.map(c => `${c.id}: ${c.name}`).join('\n')}`}
-    ]}]
-  });
-  if (res.stop_reason === 'refusal') throw new Error('refusal');
-  const tb = res.content.find(b => b.type === 'text');
-  if (!tb) throw new Error('empty');
-  const j = JSON.parse(tb.text);
-  if (!j.is_receipt) return {amount: 0, date: null, store: '', cat: null, notReceipt: true};
-  const t = parseD(j.date).getTime();
-  return {amount: Math.round((+j.amount || 0) * 100) / 100, date: /^\d{4}-\d{2}-\d{2}$/.test(j.date) && t <= Date.now() + 864e5 && t > Date.now() - 366 * 864e5 ? j.date : null,
-    store: cap(String(j.store || '').trim()).slice(0, 40), cat: cats.some(c => c.id === j.category) ? j.category : null};
+// Grayscale + contrast stretch (+2x upscale for small photos) makes thermal receipts much easier to read.
+function ocrCanvas(src) {
+  const k = src.width < 900 ? 2 : 1, c = document.createElement('canvas'); c.width = src.width * k; c.height = src.height * k;
+  const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, c.width, c.height);
+  try {
+    const im = x.getImageData(0, 0, c.width, c.height), d = im.data, hist = new Uint32Array(256);
+    for (let i = 0; i < d.length; i += 4) { const g = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0; d[i] = g; hist[g]++; }
+    const n = d.length / 4; let lo = 0, hi = 255, acc = 0;
+    for (; lo < 255 && (acc += hist[lo]) < n * .02; lo++); acc = 0;
+    for (; hi > 0 && (acc += hist[hi]) < n * .02; hi--);
+    const span = Math.max(1, hi - lo);
+    for (let i = 0; i < d.length; i += 4) { const v = Math.max(0, Math.min(255, (d[i] - lo) * 255 / span)); d[i] = d[i + 1] = d[i + 2] = v; }
+    x.putImageData(im, 0, 0);
+  } catch (e) {}
+  return c;
 }
-function aiErrorText(e) {
-  const st = e && e.status;
-  if (st === 401 || st === 403) return 'API anahtarı geçersiz; fiş telefonda okundu.';
-  if (st === 429) return 'Yapay zeka şu an yoğun; fiş telefonda okundu.';
-  if (st === 400 && /credit|balance/i.test(String(e.message))) return 'API hesabında bakiye yok; fiş telefonda okundu.';
-  return 'Yapay zekaya ulaşılamadı; fiş telefonda okundu.';
+let tessW = null;
+async function readReceipt(canvas) {
+  const T = await loadTess(), img = ocrCanvas(canvas);
+  if (T.createWorker) {
+    if (!tessW) tessW = T.createWorker('tur').then(async w => { try { await w.setParameters({tessedit_pageseg_mode: '4', preserve_interword_spaces: '1'}); } catch (e) {} return w; }).catch(e => { tessW = null; throw e; });
+    const w = await tessW, out = await w.recognize(img);
+    return parseReceipt(out && out.data ? out.data.text : '');
+  }
+  const out = await T.recognize(img, 'tur'); return parseReceipt(out && out.data ? out.data.text : '');
 }
 async function extractReceipt(blob, canvas) {
-  let aiNote = '';
-  if (aiKey()) {
-    try { const p = await readReceiptAI(blob); if (p.amount > 0 || p.notReceipt) return {...p, via: 'ai'}; }
-    catch (e) { aiNote = aiErrorText(e); }
-  }
   const p = await readReceipt(canvas), c = p.store ? guessCat(p.store, 'gider') : null;
-  return {...p, cat: c && c.type === 'gider' ? c.id : null, via: 'ocr', aiNote};
+  return {...p, cat: c && c.type === 'gider' ? c.id : null};
 }
 // Photo in → record out. Opens the form only when the amount could not be read.
 async function autoReceipt(file) {
   let res; try { res = await shrink(file); } catch (e) { toast('Fotoğraf açılamadı.'); return; }
-  toast(aiKey() ? 'Fiş yapay zekayla okunuyor…' : 'Fiş okunuyor…');
+  toast('Fiş okunuyor…');
   let p = null; try { p = await extractReceipt(res.blob, res.canvas); } catch (e) { p = null; }
   if (p && p.amount > 0) {
     const cat = p.cat || 'diger', date = p.date || todayStr();
@@ -1633,7 +1622,7 @@ async function autoReceipt(file) {
     const tx = S.tx.find(t => t.id === ids[0]); tx.photo = true; putPhoto(tx.id, res.blob);
     const d = parseD(date); cur = {y: d.getFullYear(), m: d.getMonth()};
     save(); render(); buzz(12);
-    toast(`${tx.note} · ${money(p.amount)} · ${catById(cat).name} eklendi${p.aiNote ? ' · ' + p.aiNote : ''}`, {label: 'Düzenle', fn: () => openSheet({tx})});
+    toast(`${tx.note} · ${money(p.amount)} · ${catById(cat).name} eklendi`, {label: 'Düzenle', fn: () => openSheet({tx})});
     return;
   }
   openSheet({note: p && p.store || '', date: p && p.date || undefined, cat: p && p.cat || null});
@@ -1648,7 +1637,7 @@ $('#rcFile').addEventListener('change', async e => {
   if (!F) return;
   F.photoBlob = res.blob; F.photoRemoved = false; showThumb(URL.createObjectURL(res.blob));
   if (F.id) { msg.textContent = 'Fiş eklendi.'; return; }
-  msg.textContent = aiKey() ? 'Fiş yapay zekayla okunuyor…' : 'Fiş okunuyor…';
+  msg.textContent = 'Fiş okunuyor…';
   try {
     const p = await extractReceipt(res.blob, res.canvas); if (!F) return;
     const got = [];
@@ -1657,7 +1646,7 @@ $('#rcFile').addEventListener('change', async e => {
     if (p.date) { F.date = p.date; got.push('tarih'); }
     if (p.store && !$('#txNote').value.trim()) { $('#txNote').value = p.store; $('#txNote').dispatchEvent(new Event('change')); got.push('mağaza'); }
     paintSheet();
-    msg.textContent = (got.length ? `Okundu: ${got.join(', ')}. Kaydetmeden önce kontrol et.` : 'Fişten tutar okunamadı, elle gir.') + (p.aiNote ? ' ' + p.aiNote : '');
+    msg.textContent = (got.length ? `Okundu: ${got.join(', ')}. Kaydetmeden önce kontrol et.` : 'Fişten tutar okunamadı, elle gir.');
   } catch (x) { if (F) msg.textContent = 'Fiş okunamadı (ilk seferde internet gerekir). Fotoğraf yine eklendi.'; }
 });
 $('#rcDel').addEventListener('click', () => { if (!F) return; F.photoBlob = null; F.photoRemoved = true; showThumb(null); $('#rcMsg').textContent = ''; });
@@ -1923,9 +1912,6 @@ document.addEventListener('click', e => {
     else if (act === 'ratesManual') formModal('Kurları elle gir', [['USD', '1 dolar kaç TL?'], ['EUR', '1 euro kaç TL?'], ['GAU', '1 gram altın kaç TL?'], ['CEY', '1 çeyrek altın kaç TL?']].map(([k, l]) => ({k, label: l + ' (boş = otomatik)', t: 'num'})),
       Object.fromEntries(Object.entries(RATES.manual).map(([k, v]) => [k, String(v).replace('.', ',')])),
       v => { RATES.manual = {}; Object.entries(v).forEach(([k, x]) => { if (x > 0) RATES.manual[k] = x; }); saveRates(); render(); });
-    else if (act === 'aiKey') formModal('Anthropic API anahtarı', [{k: 'key', label: 'Anahtar (sk-ant-… ile başlar)', ph: 'sk-ant-...', max: 200}], {}, v => {
-      if (!/^sk-ant-/.test(v.key)) return 'Anahtar “sk-ant-” ile başlamalı.'; try { localStorage.setItem('kese.aikey', v.key); } catch (e) {} render(); toast('Fişler artık yapay zekayla okunacak'); });
-    else if (act === 'aiKeyDel') ask('API anahtarı kaldırılsın mı?', 'Fişler yine telefonda okunmaya devam eder.', 'Kaldır', () => { try { localStorage.removeItem('kese.aikey'); } catch (e) {} render(); });
     else if (act === 'allRems') { showAllRems = !showAllRems; render(); }
     else if (act === 'snoozeBackup') { S.backupSnooze = Date.now() + 7 * 864e5; save(); render(); }
     else if (act === 'setPin') formModal(getPin() ? 'PIN\'i değiştir' : 'PIN koy', [{k: 'p1', label: '4 haneli PIN', t: 'pin'}, {k: 'p2', label: 'PIN\'i tekrar yaz', t: 'pin'}], {},
@@ -1987,7 +1973,7 @@ function toast(msg, action) {
   if (action) el.querySelector('button').onclick = () => { action.fn(); el.hidden = true; buzz(8); };
   toastT = setTimeout(() => { el.hidden = true; }, action ? 5000 : 3000);
 }
-window.addEventListener('kese-updated', () => toast('Kese güncellendi', {label: 'Yenile', fn: () => location.reload()}));
+window.addEventListener('kese-updated', () => toast('Hesap Kitap güncellendi', {label: 'Yenile', fn: () => location.reload()}));
 
 let rT; window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { if (view === 'ozet') render(); }, 150); });
 /* ================= backup + lock ================= */
@@ -2011,7 +1997,7 @@ async function pinKey(k) {
 }
 $('#lockPad').addEventListener('click', e => { const b = e.target.closest('button'); if (b) pinKey(b.textContent.trim()); });
 document.addEventListener('keydown', e => { if (!lock.hidden) { e.preventDefault(); e.stopPropagation(); pinKey(e.key); } }, true);
-$('#lockForgot').addEventListener('click', () => ask('PIN\'i mi unuttun?', 'PIN hiçbir yere kaydedilmediği için kurtarılamaz. Kilidi kaldırmanın tek yolu bu cihazdaki tüm Kese verilerini silmek. Yedeğin varsa sonra geri yükleyebilirsin.', 'Verileri sil ve kilidi kaldır', () => {
+$('#lockForgot').addEventListener('click', () => ask('PIN\'i mi unuttun?', 'PIN hiçbir yere kaydedilmediği için kurtarılamaz. Kilidi kaldırmanın tek yolu bu cihazdaki tüm Hesap Kitap verilerini silmek. Yedeğin varsa sonra geri yükleyebilirsin.', 'Verileri sil ve kilidi kaldır', () => {
   try { localStorage.removeItem(KEY + '.pin'); } catch (e) {} S = blank(); S.since = Date.now(); S.autoDone = {}; save(); lock.hidden = true; go('ozet'); toast('Veriler silindi, kilit kaldırıldı'); }));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { hiddenAt = Date.now(); return; }
@@ -2038,22 +2024,21 @@ function greetSplash() {
 }
 function askName(next, title = 'Hoş geldin') {
   showWelcome(`<div class="brandmark">${LOGO}</div><div class="w-hi">${title}</div>
-    <p class="w-sub">Kese, ay içinde paranın nereye gittiğini birkaç dokunuşla tutman için. Önce tanışalım.</p>
+    <p class="w-sub">Hesap Kitap, ay içinde paranın nereye gittiğini birkaç dokunuşla tutman için. Önce tanışalım.</p>
     <form id="wName" style="display:flex;flex-direction:column;gap:10px"><label class="field" for="wn">Adın ne?</label>
       <input class="inp" id="wn" autocomplete="given-name" maxlength="24" placeholder="örn. Abdurrahman"><div class="err" id="wErr"></div><button class="save">Devam</button></form>`);
   const inp = $('#wn'); setTimeout(() => inp.focus(), 250);
   $('#wName').addEventListener('submit', e => { e.preventDefault(); const n = cap(inp.value.trim()); if (!n) { $('#wErr').textContent = 'Adını yaz, seni böyle karşılayalım.'; return; } next(n); });
 }
 function askStart() {
-  showWelcome(`<div class="w-hi anim">Memnun oldum,<span>${esc(ME.name)}</span></div><p class="w-sub">Nasıl başlamak istersin? Hepsini sonra değiştirebilirsin.</p>
-    <div class="people">${Object.entries(PROFILES).map(([k, p]) => `<button class="w-opt" data-wprof="${k}"><span class="bub" style="--c:#12805C">${svgI(p.icon, 22)}</span><span><b>${p.name}</b><small>${p.desc} · bütçe ${money(p.total)}</small></span></button>`).join('')}
-      <button class="w-opt" data-wstart="blank"><span class="bub">${svgI('digerg', 22)}</span><span><b>Boş başla</b><small>Her şeyi kendim ayarlayacağım</small></span></button>
+  showWelcome(`<div class="w-hi anim">Memnun oldum,<span>${esc(ME.name)}</span></div><p class="w-sub">Nasıl başlamak istersin?</p>
+    <div class="people">
+      <button class="w-opt" data-wstart="blank"><span class="bub" style="--c:#12805C">${svgI('digerg', 22)}</span><span><b>Hemen başla</b><small>Harcamalarını, gelirini ve sabit ödemelerini sen gir</small></span></button>
       <button class="w-opt" data-wstart="sample"><span class="bub">${svgI('chart', 22)}</span><span><b>Önce örnek verilerle gezeyim</b><small>Uydurma kayıtlar, tek dokunuşla silinir</small></span></button></div>`);
   welcome.onclick = e => {
     const b = e.target.closest('[data-wprof],[data-wstart]'); if (!b) return;
     const fresh = () => Object.assign(blank(), {since: Date.now(), autoDone: {}});
-    if (b.dataset.wprof) { const keep = S.sample ? {tx: [], goals: []} : {tx: S.tx, goals: S.goals}; S = Object.assign(fresh(), keep); applyProfile(S, b.dataset.wprof); }
-    else if (b.dataset.wstart === 'blank') { if (S.sample) S = fresh(); }
+    if (b.dataset.wstart === 'blank') { if (S.sample) S = fresh(); }
     else if (!S.sample) S = Object.assign(makeSample(), {since: Date.now(), autoDone: {}});
     save(); autoFixed(); cur = {y: now0.getFullYear(), m: now0.getMonth()}; go('ozet'); buzz(10); if (!tourSeen()) showTour(); else { closeWelcome(); runLaunch(); }
   };

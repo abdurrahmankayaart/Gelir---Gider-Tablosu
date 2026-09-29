@@ -1,0 +1,25 @@
+name: iOS uygulaması
+
+on:
+  push:
+    branches: [claude/monthly-expense-tracker-3cktrg, main]
+  workflow_dispatch:
+
+jobs:
+  simulator-build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build:web
+      - run: npx cap sync ios
+      - name: Simülatör için derle (imzasız)
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -40
+          test "${PIPESTATUS[0]}" -eq 0

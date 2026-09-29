@@ -1,7 +1,7 @@
 {
-  "name": "Kese – Gelir Gider Takibi",
-  "short_name": "Kese",
-  "description": "Aylık gelir ve giderlerini telefondan hızlıca kaydet, kategori bazında gör.",
+  "name": "Hesap Kitap – Gelir Gider Takibi",
+  "short_name": "Hesap Kitap",
+  "description": "Aylık gelir ve giderlerini telefondan hızlıca kaydet, fişin fotoğrafını çek, nereye harcadığını gör.",
   "lang": "tr",
   "start_url": "./#ozet",
   "scope": "./",
