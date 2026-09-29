@@ -668,7 +668,7 @@ function applyTheme() {
 applyTheme();
 if (!VIEWS.includes(view)) view = 'ozet';
 let listFilter = {q: '', type: 'all', cat: '', all: false, tag: ''};
-let showAllCats = false;
+let showAllCats = false, showAllRems = false;
 
 /* currencies & gold: rates are shared by everyone on the device */
 const UNITS = {TRY: {name: 'TL', sym: '₺'}, USD: {name: 'Dolar', sym: '$'}, EUR: {name: 'Euro', sym: '€'}, GAU: {name: 'Gram altın', sym: 'gr'}, CEY: {name: 'Çeyrek altın', sym: 'adet'}};
@@ -747,7 +747,8 @@ function reminders() {
   S.fixed.forEach(f => { if (paid.has(f.id)) return; const dd = Math.min(f.day, dim) - n.getDate();
     if (dd >= 0 && dd <= 2) out.push({id: 'fx' + f.id, tone: 'warn', text: `<b>${esc(f.name)}</b> ${whenTxt(dd)} · ${f.type === 'gelir' ? '+' : ''}${money(f.amount)}${f.auto ? ' · otomatik eklenecek' : ''}`, act: f.auto ? '' : `<button class="btn sm" data-pay="${f.id}">${f.type === 'gelir' ? 'Geldi' : 'Ödendi'}</button>`}); });
   const byCat = {}; S.tx.filter(t => t.type === 'gider' && t.date.slice(0, 7) === k).forEach(t => byCat[t.cat] = (byCat[t.cat] || 0) + t.amount);
-  Object.entries(S.budgets.cats).forEach(([c, b]) => { const v = byCat[c] || 0; if (b && v >= b * .85)
+  const fixedCats = new Set([...S.fixed.map(f => f.cat), ...S.tx.filter(t => t.inst && t.date.slice(0, 7) === k).map(t => t.cat)]);
+  Object.entries(S.budgets.cats).forEach(([c, b]) => { const v = byCat[c] || 0; if (b && v >= b * .85 && !fixedCats.has(c))
     out.push({id: 'bd' + c + (v > b ? 'x' : ''), tone: v > b ? 'bad' : 'warn', text: v > b ? `<b>${esc(catById(c).name)}</b> bütçesi ${money(v - b)} aşıldı` : `<b>${esc(catById(c).name)}</b> bütçesi %${pctOf(v, b)} doldu · ${money(b - v)} kaldı`}); });
   S.cards.forEach(c => { const pp = prevPeriod(c), due = dueAfter(pp.end, c.dueDay), dd = daysUntil(due), amt = cardSpend(c, pp);
     if (amt > 0 && dd >= 0 && dd <= 3) out.push({id: 'cd' + c.id + pp.end, tone: 'warn', text: `<b>${esc(c.name)}</b> ekstresi son ödeme ${whenTxt(dd)} · ${money(amt)}`}); });
@@ -800,6 +801,7 @@ function renderOzet(el) {
   let pexp = sum(ptx, 'gider');
   if (isCurMonth()) { const cut = Math.min(elapsed, daysIn(pm.getFullYear(), pm.getMonth())); pexp = sum(ptx.filter(t => +t.date.slice(8) <= cut), 'gider'); }
   const st = streak();
+  const dailyTx = txs.filter(t => !t.fixedId && !t.inst), dailyExp = sum(dailyTx, 'gider');
   let h = '';
 
   if (S.sample) h += `<div class="banner"><div><b>Örnek verilerle açıldı.</b> Uygulamayı kurcalayabilmen için 6 aylık uydurma kayıt ve iki birikim hedefi ekledik. Kendi harcamalarına geçmeden önce sil.</div>
@@ -821,18 +823,20 @@ function renderOzet(el) {
     <div class="split-l num"><span><i class="dot" style="background:var(--out)"></i>Harcama ${money(exp)}</span>${sav > 0 ? `<span><i class="dot" style="background:var(--save)"></i>Birikim ${money(sav)}</span>` : ''}${left > 0 ? `<span><i class="dot" style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--axis)"></i>Kalan %${pctOf(left, inc)}</span>` : ''}</div>
     <div class="io">
       <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${inc ? `tasarruf oranı %${Math.max(0, pctOf(inc - exp, inc))}` : '&nbsp;'}</em></div>
-      <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${money(exp)}</b><em>${pexp > 0 && exp > 0 ? `geçen aya göre ${exp >= pexp ? '▲' : '▼'} %${Math.abs(pctOf(exp - pexp, pexp))}` : '&nbsp;'}</em></div>
+      <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${money(exp)}</b><em class="num">${exp ? `günlük ${money(dailyExp)} · sabit ${money(exp - dailyExp)}` : '&nbsp;'}</em></div>
     </div>
   </section>`;
 
-  if (rems.length) h += `<section class="rems" aria-label="Hatırlatmalar">${rems.map(x => `<div class="rem"><i class="tdot" style="background:var(--${x.tone})"></i><span>${x.text}</span>${x.act || ''}<button class="rem-x" data-dismiss="${esc(x.id)}" aria-label="Bugün için kapat">${svgI('x', 16)}</button></div>`).join('')}</section>`;
+  const remShown = showAllRems ? rems : rems.slice(0, 2);
+  if (rems.length) h += `<section class="rems" aria-label="Hatırlatmalar">${remShown.map(x => `<div class="rem"><i class="tdot" style="background:var(--${x.tone})"></i><span>${x.text}</span>${x.act || ''}<button class="rem-x" data-dismiss="${esc(x.id)}" aria-label="Bugün için kapat">${svgI('x', 16)}</button></div>`).join('')}${rems.length > 2 ? `<button class="linkbtn" data-act="allRems" style="align-self:flex-start">${showAllRems ? 'Daha az göster' : `+${rems.length - 2} hatırlatma daha`}</button>` : ''}</section>`;
   h += rolloverCard();
   h += `<section aria-label="Hızlı yaz">
     <div class="qin"><input id="qtext" placeholder="Ne harcadın? örn. kahve 120" enterkeyhint="done" autocomplete="off" aria-label="Hızlı kayıt: açıklama ve tutar yaz">
       <button type="button" class="qbtn" id="qmic" aria-label="Sesle söyle" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+      <label class="qbtn" aria-label="Fiş ya da hesap fotoğrafı çek" title="Fiş ya da hesap fotoğrafı çek">${svgI('camera', 19)}<input type="file" id="qcamFile" accept="image/*" capture="environment" hidden></label>
       <button type="button" class="qbtn go" id="qgo" aria-label="Ekle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
     <div class="qprev" id="qprev"></div>
-    <div class="qhelp" id="qhelp">“market 450”, “taksi 180 dün nakit”, “telefon 24000 6 taksit”, “otel 3000 #tatil” ya da “maaş 52000” gibi yazman yeterli.</div>
+    <div class="qhelp" id="qhelp">“market 450”, “taksi 180 dün nakit”, “telefon 24000 6 taksit”, “otel 3000 #tatil” gibi yaz; ya da kamerayla fişin veya hesabın fotoğrafını çek, kendiliğinden eklensin.</div>
   </section>`;
 
   h += `<section aria-label="Tek dokunuşla ekle"><div class="sec-h"><h2>Tek dokunuşla</h2><button class="linkbtn" data-act="goSettings">Düzenle</button></div>
@@ -851,74 +855,31 @@ function renderOzet(el) {
       <div class="s num">${money(exp)} / ${money(B)}</div></div></section>`;
   }
 
-  if (S.goals.length) {
-    h += `<section aria-label="Birikim hedefleri"><div class="sec-h"><h2>Hedefler</h2><button class="linkbtn" data-go="hedefler">Tümü</button></div><div class="chips">
-      ${S.goals.map(g => { const sv = goalSaved(g), p = Math.min(1, sv / g.target); return `<button class="gmini" style="--c:${g.color}" data-gdep="${g.id}">
-        <div class="top2"><span class="bub" style="background:var(--surface)">${gIc(g)}</span><span class="pill mute" style="background:var(--surface)">%${Math.round(p * 100)}</span></div>
-        <div><b>${esc(g.name)}</b><small class="num">${fmtU(sv, g.unit)} / ${fmtU(g.target, g.unit)}</small></div><div class="bar"><i style="width:${p * 100}%"></i></div></button>`; }).join('')}
-      <button class="qchip add" data-act="newGoal" style="min-width:110px">+ Hedef</button></div></section>`;
-  }
-
-  {
-    const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
-    const fx = [...S.fixed].sort((a, b) => a.day - b.day), unpaid = fx.filter(f => !paidIds.has(f.id));
-    const waiting = unpaid.filter(f => f.type !== 'gelir').reduce((a, f) => a + f.amount, 0);
-    h += `<section class="card"><div class="sec-h"><div><h2>Sabit kalemler</h2>${fx.length ? `<div class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi · düzenlemek için dokun</div>` : ''}</div><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
-      ${fx.length ? `<div>${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate() && new Date(cur.y, cur.m, f.day, 23).getTime() > (S.since || 0), inc = f.type === 'gelir';
-        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><button class="li-main" data-editfixed="${f.id}" aria-label="${esc(f.name)} düzenle"><span class="bub">${ci(c)}</span><span style="min-width:0"><span class="t" style="display:block">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</span><span class="m num" style="display:block">Ayın ${f.day}. günü · ${inc ? '+' : ''}${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</span></span></button>
-        ${paid ? `<span class="check">✓ ${inc ? 'Geldi' : 'Ödendi'}</span>` : `<button class="btn sm" data-pay="${f.id}">${inc ? 'Geldi' : 'Ödendi'}</button>`}</div>`; }).join('')}</div>
-      ${unpaid.length > 1 ? `<div class="row" style="margin-top:10px;justify-content:space-between"><span class="hint num">${waiting ? money(waiting) + ' ödeme bekliyor' : ''}</span><button class="btn sm" data-act="payAll">Hepsini işle</button></div>` : ''}
-      ${!S.fixed.some(f => f.auto) ? `<p class="hint" style="margin-top:10px">Bir kaleme dokunup “otomatik ekle”yi açarsan günü gelince kendiliğinden işlenir.</p>` : ''}`
-      : `<p class="hint">Kira, faturalar, abonelikler ve maaş gibi her ay tekrar edenleri ekle; ay içinde tek dokunuşla işlersin.</p>`}
-    </section>`;
-  }
-
-  if (S.cards.length && isCurMonth()) {
-    h += `<section class="card"><div class="sec-h"><h2>Kartlar</h2><button class="linkbtn" data-act="goSettings">Düzenle</button></div><div>${S.cards.map(c => {
-      const p = cardPeriod(c), pp = prevPeriod(c), now = cardSpend(c, p), prev = cardSpend(c, pp), due = dueAfter(pp.end, c.dueDay), dd = daysUntil(due);
-      return `<div class="li" style="grid-template-columns:auto 1fr auto;--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Bu dönem ${shortD(p.start)} – ${shortD(p.end)}${c.limit ? ` · limit %${pctOf(now, c.limit)} dolu` : ''}</div>
-        ${prev > 0 ? `<div class="m num">Son ekstre ${money(prev)} · son ödeme ${due.getDate()} ${AYK[due.getMonth()]}${dd >= 0 && dd <= 3 ? ` <span class="pill warn">${whenTxt(dd)}</span>` : ''}</div>` : ''}
-        ${c.limit ? `<div class="bar" style="height:5px;margin-top:6px"><i style="width:${Math.min(100, now / c.limit * 100)}%;background:${now > c.limit * .85 ? 'var(--warn)' : 'var(--ink-2)'}"></i></div>` : ''}</div><b class="num">${money(now)}</b></div>`; }).join('')}</div></section>`;
-  }
-  const endKey = mkey(cur.y, cur.m), nd = new Date(cur.y, cur.m + 1, 1), nk = mkey(nd.getFullYear(), nd.getMonth());
-  const insts = S.tx.filter(t => t.inst);
-  if (insts.some(t => t.date.slice(0, 7) >= endKey)) {
-    const thisM = sum(insts.filter(t => t.date.slice(0, 7) === endKey)), nextM = sum(insts.filter(t => t.date.slice(0, 7) === nk)), rest = sum(insts.filter(t => t.date.slice(0, 7) > endKey));
-    const groups = new Set(insts.filter(t => t.date.slice(0, 7) > endKey).map(t => t.inst.g));
-    h += `<section class="card"><div class="sec-h"><h2>Taksitler</h2><span class="sub">${groups.size} devam eden alım</span></div>
-      <div class="rp-grid"><div><small>Bu ay</small><b class="num">${money(thisM)}</b></div><div><small>Gelecek ay</small><b class="num">${money(nextM)}</b></div></div>
-      <p class="hint num" style="margin-top:10px">Önümüzdeki aylara toplam ${money(rest)} taksit yükü var.</p></section>`;
-  }
-
   const ending = !isCurMonth() || dim - now0.getDate() <= 3;
   h += `<button class="cta" data-act="report"><span class="ic">${svgI('chart', 22)}</span><span><b>${AY[cur.m]} raporu${ending ? ' hazır' : ''}</b><small>${ending ? 'Nereye harcadın, ne değişti, gelecek ay için öneriler' : 'Ay bitmedi; şu ana kadarki tablo ve öneriler'}</small></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>`;
 
   const byCat = {};
-  txs.filter(t => t.type === 'gider').forEach(t => byCat[t.cat] = (byCat[t.cat] || 0) + t.amount);
+  dailyTx.filter(t => t.type === 'gider').forEach(t => byCat[t.cat] = (byCat[t.cat] || 0) + t.amount);
   const rows = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
   const shown = showAllCats ? rows : rows.slice(0, 6);
-  h += `<section><div class="sec-h"><h2>Nereye gitti?</h2><span class="sub">dokun, hareketleri gör</span></div>
+  h += `<section><div class="sec-h"><h2>Günlük harcamalar</h2><span class="sub">sabitler hariç</span></div>
     ${rows.length ? `<div class="cgrid">${shown.map(([k, v]) => { const c = catById(k), b = S.budgets.cats[k] || 0;
       const stt = b ? (v > b ? 'bad' : v > b * .85 ? 'warn' : 'good') : null;
-      return `<button class="ccard" ${cs(c)} data-cat="${k}"><div class="h"><span class="bub" style="background:var(--surface)">${ci(c)}</span><span class="pct">%${pctOf(v, exp)}</span></div>
+      return `<button class="ccard" ${cs(c)} data-cat="${k}"><div class="h"><span class="bub" style="background:var(--surface)">${ci(c)}</span><span class="pct">%${pctOf(v, dailyExp)}</span></div>
         <div class="n">${esc(c.name)}</div><div class="a num">${money(v)}</div>
         <div class="bar"><i style="width:${b ? Math.min(100, v / b * 100) : v / rows[0][1] * 100}%;background:${stt && stt !== 'good' ? `var(--${stt})` : 'var(--c)'}"></i></div>
         ${b ? `<div class="bl num"><span>${v <= b ? money(b - v) + ' kaldı' : money(v - b) + ' aşıldı'}</span><span>/ ${money(b)}</span></div>` : ''}
       </button>`; }).join('')}
       ${rows.length > 6 ? `<button class="btn more" data-act="toggleCats">${showAllCats ? 'Daha az göster' : `Tümünü göster (${rows.length})`}</button>` : ''}</div>`
-    : `<div class="card empty">Bu ay henüz harcama yok. Yukarıya “kahve 120” yaz ya da + düğmesine bas.</div>`}
+    : `<div class="card empty">Bu ay henüz günlük harcama yok. Yukarıya “kahve 120” yaz, fişin fotoğrafını çek ya da + düğmesine bas.</div>`}
   </section>`;
 
   h += `<section class="card"><div class="sec-h"><h2>Günlük harcama</h2><span class="sub num">ort. ${money(sum(txs.filter(t => !t.fixedId && !t.inst), 'gider') / Math.max(1, elapsed))}/gün</span></div>
     <div class="legend"><span><i class="dot" style="background:var(--out)"></i>Gider</span><span><i class="ln"></i>Ortalama</span><span class="muted">sabit ödeme ve taksitler hariç</span></div>
-    <div class="chart" id="dailyChart"></div></section>
-  <section class="card"><div class="sec-h"><h2>Son 6 ay</h2></div>
-    <div class="legend"><span><i class="dot" style="background:var(--in)"></i>Gelir</span><span><i class="dot" style="background:var(--out)"></i>Gider</span></div>
-    <div class="chart" id="trendChart"></div></section>`;
+    <div class="chart" id="dailyChart"></div></section>`;
 
   el.innerHTML = h;
   dailyChart($('#dailyChart'), txs, dim, elapsed);
-  trendChart($('#trendChart'));
   wireQuickText();
 }
 function profileGrid() {
@@ -973,6 +934,7 @@ function parseQuick(text) {
 }
 function wireQuickText() {
   const inp = $('#qtext'); if (!inp) return;
+  $('#qcamFile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) autoReceipt(f); });
   const prev = $('#qprev'), help = $('#qhelp');
   const paint = () => {
     const v = inp.value.trim();
@@ -1083,20 +1045,61 @@ document.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') s
 window.addEventListener('scroll', () => { tip.hidden = true; }, {passive: true});
 
 /* ================= HAREKETLER ================= */
+let listTab = 'gunluk';
+const ltabs = () => `<div class="tabs" style="grid-template-columns:1fr 1fr" role="group" aria-label="Harcama türü"><button data-ltab="gunluk" aria-pressed="${listTab === 'gunluk'}">Günlük harcamalar</button><button data-ltab="sabit" aria-pressed="${listTab === 'sabit'}">Sabit harcamalar</button></div>`;
+function fixedPageHtml() {
+  const txs = monthTx(cur.y, cur.m), fx = txs.filter(t => t.fixedId || t.inst);
+  const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
+  const pending = S.fixed.filter(f => f.type !== 'gelir' && !paidIds.has(f.id)).reduce((a, f) => a + f.amount, 0);
+  let h = `<div class="duo"><div><small>${AY[cur.m]} sabit giderler</small><b class="num">${money(sum(fx, 'gider'))}</b></div><div><small>Henüz ödenmemiş</small><b class="num" style="color:${pending ? 'var(--warn)' : 'var(--ink)'}">${money(pending)}</b></div></div>`;
+  {
+    const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
+    const fx = [...S.fixed].sort((a, b) => a.day - b.day), unpaid = fx.filter(f => !paidIds.has(f.id));
+    const waiting = unpaid.filter(f => f.type !== 'gelir').reduce((a, f) => a + f.amount, 0);
+    h += `<section class="card"><div class="sec-h"><div><h2>Sabit kalemler</h2>${fx.length ? `<div class="sub num">${fx.length - unpaid.length}/${fx.length} işlendi · düzenlemek için dokun</div>` : ''}</div><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
+      ${fx.length ? `<div>${fx.map(f => { const c = catById(f.cat), paid = paidIds.has(f.id), due = isCurMonth() && !paid && f.day < now0.getDate() && new Date(cur.y, cur.m, f.day, 23).getTime() > (S.since || 0), inc = f.type === 'gelir';
+        return `<div class="li ${paid ? 'done' : ''}" ${cs(c)}><button class="li-main" data-editfixed="${f.id}" aria-label="${esc(f.name)} düzenle"><span class="bub">${ci(c)}</span><span style="min-width:0"><span class="t" style="display:block">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</span><span class="m num" style="display:block">Ayın ${f.day}. günü · ${inc ? '+' : ''}${money(f.amount)}${due ? ' · <span class="pill warn">günü geçti</span>' : ''}</span></span></button>
+        ${paid ? `<span class="check">✓ ${inc ? 'Geldi' : 'Ödendi'}</span>` : `<button class="btn sm" data-pay="${f.id}">${inc ? 'Geldi' : 'Ödendi'}</button>`}</div>`; }).join('')}</div>
+      ${unpaid.length > 1 ? `<div class="row" style="margin-top:10px;justify-content:space-between"><span class="hint num">${waiting ? money(waiting) + ' ödeme bekliyor' : ''}</span><button class="btn sm" data-act="payAll">Hepsini işle</button></div>` : ''}
+      ${!S.fixed.some(f => f.auto) ? `<p class="hint" style="margin-top:10px">Bir kaleme dokunup “otomatik ekle”yi açarsan günü gelince kendiliğinden işlenir.</p>` : ''}`
+      : `<p class="hint">Kira, faturalar, abonelikler ve maaş gibi her ay tekrar edenleri ekle; ay içinde tek dokunuşla işlersin.</p>`}
+    </section>`;
+  }
+
+  if (S.cards.length && isCurMonth()) {
+    h += `<section class="card"><div class="sec-h"><h2>Kartlar</h2><button class="linkbtn" data-act="goSettings">Düzenle</button></div><div>${S.cards.map(c => {
+      const p = cardPeriod(c), pp = prevPeriod(c), now = cardSpend(c, p), prev = cardSpend(c, pp), due = dueAfter(pp.end, c.dueDay), dd = daysUntil(due);
+      return `<div class="li" style="grid-template-columns:auto 1fr auto;--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Bu dönem ${shortD(p.start)} – ${shortD(p.end)}${c.limit ? ` · limit %${pctOf(now, c.limit)} dolu` : ''}</div>
+        ${prev > 0 ? `<div class="m num">Son ekstre ${money(prev)} · son ödeme ${due.getDate()} ${AYK[due.getMonth()]}${dd >= 0 && dd <= 3 ? ` <span class="pill warn">${whenTxt(dd)}</span>` : ''}</div>` : ''}
+        ${c.limit ? `<div class="bar" style="height:5px;margin-top:6px"><i style="width:${Math.min(100, now / c.limit * 100)}%;background:${now > c.limit * .85 ? 'var(--warn)' : 'var(--ink-2)'}"></i></div>` : ''}</div><b class="num">${money(now)}</b></div>`; }).join('')}</div></section>`;
+  }
+  const endKey = mkey(cur.y, cur.m), nd = new Date(cur.y, cur.m + 1, 1), nk = mkey(nd.getFullYear(), nd.getMonth());
+  const insts = S.tx.filter(t => t.inst);
+  if (insts.some(t => t.date.slice(0, 7) >= endKey)) {
+    const thisM = sum(insts.filter(t => t.date.slice(0, 7) === endKey)), nextM = sum(insts.filter(t => t.date.slice(0, 7) === nk)), rest = sum(insts.filter(t => t.date.slice(0, 7) > endKey));
+    const groups = new Set(insts.filter(t => t.date.slice(0, 7) > endKey).map(t => t.inst.g));
+    h += `<section class="card"><div class="sec-h"><h2>Taksitler</h2><span class="sub">${groups.size} devam eden alım</span></div>
+      <div class="rp-grid"><div><small>Bu ay</small><b class="num">${money(thisM)}</b></div><div><small>Gelecek ay</small><b class="num">${money(nextM)}</b></div></div>
+      <p class="hint num" style="margin-top:10px">Önümüzdeki aylara toplam ${money(rest)} taksit yükü var.</p></section>`;
+  }
+
+  return h;
+}
 function renderList(el) {
-  const txs = listFilter.all ? S.tx : monthTx(cur.y, cur.m), used = [...new Set(txs.map(t => t.cat))], q = trLow(listFilter.q);
+  if (listTab === 'sabit') { el.innerHTML = ltabs() + fixedPageHtml(); return; }
+  const txs = (listFilter.all ? S.tx : monthTx(cur.y, cur.m)).filter(t => !t.fixedId && !t.inst), used = [...new Set(txs.map(t => t.cat))], q = trLow(listFilter.q);
   const tagsHere = [...new Set(txs.flatMap(t => t.tags || []))].sort();
   const f = txs.filter(t => (listFilter.type === 'all' || t.type === listFilter.type) && (!listFilter.cat || t.cat === listFilter.cat) && (!listFilter.tag || (t.tags || []).includes(listFilter.tag)) &&
     (!q || trLow(t.note).includes(q) || trLow(catById(t.cat).name).includes(q))).sort((a, b) => b.date.localeCompare(a.date) || (b.ts || 0) - (a.ts || 0));
   const groups = {}; f.forEach(t => (groups[t.date] = groups[t.date] || []).push(t));
-  let h = `<div style="display:flex;flex-direction:column;gap:10px">
+  let h = ltabs() + `<div style="display:flex;flex-direction:column;gap:10px">
     <input class="inp" id="q" type="search" placeholder="Ara: açıklama veya kategori" value="${esc(listFilter.q)}" aria-label="Kayıtlarda ara">
     <div class="segs">${[['all', 'Tümü'], ['gider', 'Giderler'], ['gelir', 'Gelirler']].map(([k, l]) => `<button class="seg-b" data-ft="${k}" aria-pressed="${listFilter.type === k}">${l}</button>`).join('')}
       <button class="seg-b" data-fall="1" aria-pressed="${listFilter.all}">Tüm aylar</button><select class="seg-b" id="fcat" aria-label="Kategori filtresi"><option value="">Tüm kategoriler</option>${used.map(id => `<option value="${id}" ${listFilter.cat === id ? 'selected' : ''}>${esc(catById(id).name)}</option>`).join('')}</select>
       ${tagsHere.length || listFilter.tag ? `<select class="seg-b" id="ftag" aria-label="Etiket filtresi"><option value="">Tüm etiketler</option>${[...new Set([...tagsHere, listFilter.tag].filter(Boolean))].map(t => `<option value="${esc(t)}" ${listFilter.tag === t ? 'selected' : ''}>#${esc(t)}</option>`).join('')}</select>` : ''}</div>
     <div class="hint num">${f.length} kayıt · Gider <b style="color:var(--ink)">${money(sum(f, 'gider'))}</b> · Gelir <b style="color:var(--ink)">${money(sum(f, 'gelir'))}</b>${f.length ? ' · Silmek için sola kaydır' : ''}</div></div>`;
   const allDays = Object.keys(groups), days = allDays.slice(0, 120);
-  if (!days.length) h += `<div class="card empty">${txs.length ? 'Aramana uyan kayıt yok.' : 'Bu ay için kayıt yok.'}</div>`;
+  if (!days.length) h += `<div class="card empty">${txs.length ? 'Aramana uyan kayıt yok.' : 'Bu ay için günlük harcama yok. Kira, fatura ve taksitler “Sabit harcamalar” sekmesinde.'}</div>`;
   days.forEach(d => {
     const dt = parseD(d), g = groups[d], dayE = sum(g, 'gider');
     h += `<div><div class="day-h"><span>${dt.getDate()} ${AY[dt.getMonth()]}${dt.getFullYear() !== now0.getFullYear() ? ' ' + dt.getFullYear() : ''} · ${GUN[dt.getDay()]}</span><span class="num">${dayE ? '−' + money(dayE) : ''}</span></div><div class="txg">`;
@@ -1402,6 +1405,10 @@ function renderSettings(el) {
   <section class="card"><div class="sec-h"><h2>Sabit kalemler</h2><button class="btn sm" data-act="newFixed">+ Ekle</button></div>
     <p class="hint" style="margin-bottom:6px">Kira, fatura, abonelik, maaş gibi her ay tekrar edenler. “Otomatik” olanlar günü gelince kendiliğinden eklenir.</p>
     <div>${S.fixed.length ? [...S.fixed].sort((a, b) => a.day - b.day).map(f => { const c = catById(f.cat); return `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(f.name)}${f.auto ? '<span class="tag-auto">otomatik</span>' : ''}</div><div class="m num">${f.type === 'gelir' ? 'Gelir +' : ''}${money(f.amount)} · ayın ${f.day}. günü</div></div><button class="btn sm" data-editfixed="${f.id}">Düzenle</button></div>`; }).join('') : '<p class="hint">Henüz sabit kalem yok.</p>'}</div></section>
+  <section class="card"><div class="sec-h"><h2>Fiş okuma</h2>${aiKey() ? '<span class="pill good">Yapay zeka açık</span>' : '<span class="pill mute">Telefonda</span>'}</div>
+    <p class="hint" style="margin-bottom:10px">Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çekince tutar, tarih, işletme ve kategori kendiliğinden girilir. Normalde okuma telefonda yapılır, ücretsizdir ama buruşuk fişlerde yanılabilir.</p>
+    <p class="hint" style="margin-bottom:10px"><b>Daha isabetli okuma:</b> Kendi Anthropic API anahtarını eklersen fotoğraf okunmak için Anthropic’e (Claude) gönderilir. Fiş başına yaklaşık 0,01–0,02 dolar ücret çıkar. Anahtar yalnızca bu telefonda saklanır. Anahtarı console.anthropic.com → API Keys bölümünden alabilirsin.</p>
+    <div class="row">${aiKey() ? '<button class="btn sm" data-act="aiKey">Anahtarı değiştir</button><button class="btn sm danger" data-act="aiKeyDel">Anahtarı kaldır</button>' : '<button class="btn sm primary" data-act="aiKey">API anahtarı ekle</button>'}</div></section>
   <section class="card"><div class="sec-h"><h2>Kartlarım</h2><button class="btn sm" data-act="newCard">+ Kart ekle</button></div>
     <p class="hint" style="margin-bottom:6px">Kredi kartının kesim ve son ödeme gününü gir; ana sayfada dönem harcamasını ve ekstreyi gösterelim. Kart seçilmeden girilen kart harcamaları ilk karta sayılır.</p>
     <div>${S.cards.length ? S.cards.map(c => `<div class="set-i" style="--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Kesim ${c.cutDay} · son ödeme ${c.dueDay}${c.limit ? ' · limit ' + money(c.limit) : ''}</div></div><button class="btn sm" data-editcard="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Henüz kart eklenmedi.</p>'}</div></section>
@@ -1431,17 +1438,17 @@ function renderSettings(el) {
   <section class="card"><div class="sec-h"><h2>Sıfırla</h2></div><div class="row">
     ${S.sample ? '<button class="btn sm" data-act="clearSample">Örnek verileri sil</button>' : '<button class="btn sm" data-act="loadSample">Örnek verileri yükle</button>'}
     <button class="btn sm danger" data-act="wipe">Tüm verileri sil</button><button class="btn sm" data-act="tour">Tanıtım turunu göster</button></div>
-    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 3.0</p></section>`;
+    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Kese 3.1</p></section>`;
   $('#impFile', el).addEventListener('change', e => readFile(e.target.files[0], doImport));
   $('#restoreFile', el).addEventListener('change', e => readFile(e.target.files[0], restore));
 }
 function readFile(f, cb) { if (!f) return; const r = new FileReader(); r.onload = () => cb(String(r.result)); r.readAsText(f, 'utf-8'); }
 
 /* ================= import / export ================= */
-const KW = [[/migros|a101|bim|şok|carrefour|market|pazar|bakkal|manav|kasap|ekmek|fırın/, 'market'], [/kahve|cafe|kafe|yemek|restoran|döner|pizza|burger|starbucks|yemeksepeti|kahvaltı|tatlı|simit/, 'yemek'],
-  [/metro|otobüs|taksi|uber|benzin|akaryakıt|mazot|istanbulkart|otopark|köprü|hgs|ogs|bilet|dolmuş|marmaray/, 'ulasim'], [/kira|aidat/, 'kira'], [/elektrik|doğalgaz|dogalgaz|su faturası|fatura/, 'fatura'],
+const KW = [[/migros|a101|bim|şok|carrefour|market|pazar|bakkal|manav|kasap|ekmek|fırın|macrocenter|hakmar|bizim toptan|file|happy center|onur/, 'market'], [/kahve|cafe|kafe|coffee|yemek|restoran|restaurant|lokanta|döner|kebap|kebab|pide|lahmacun|çorba|köfte|pizza|burger|mcdonald|kfc|popeyes|domino|little caesars|starbucks|espressolab|gloria jean|kahve dünyası|simit|mado|big chefs|midpoint|usta dönerci|tavuk dünyası|baydöner|iskender|köfteci|pastane|yemeksepeti|getir yemek|kahvaltı|tatlı|dondurma|adisyon/, 'yemek'],
+  [/metro|otobüs|taksi|uber|benzin|akaryakıt|mazot|motorin|opet|shell|petrol ofisi|aytemiz|total|bp |istanbulkart|otopark|köprü|hgs|ogs|bilet|dolmuş|marmaray/, 'ulasim'], [/kira|aidat/, 'kira'], [/elektrik|doğalgaz|dogalgaz|su faturası|fatura/, 'fatura'],
   [/internet|turkcell|vodafone|türk telekom|superonline/, 'iletisim'], [/netflix|spotify|youtube|disney|abonelik|icloud|prime|exxen|blutv/, 'abonelik'], [/eczane|doktor|hastane|ilaç|diş/, 'saglik'],
-  [/giyim|tişört|ayakkabı|mont|pantolon|zara|lcw|koton|defacto|elbise/, 'giyim'], [/sinema|konser|oyun|maç|tiyatro/, 'eglence'], [/berber|kuaför|kozmetik|parfüm/, 'kisisel'], [/otel|pansiyon|tatil/, 'eglence'], [/kredi|taksit|borç|kart borcu/, 'kredi'],
+  [/giyim|tişört|ayakkabı|mont|pantolon|zara|lcw|lc waikiki|koton|defacto|mavi|boyner|h&m|elbise/, 'giyim'], [/sinema|konser|oyun|maç|tiyatro/, 'eglence'], [/berber|kuaför|kozmetik|parfüm/, 'kisisel'], [/otel|pansiyon|tatil/, 'eglence'], [/kredi|taksit|borç|kart borcu/, 'kredi'],
   [/okul|kurs|kitap|kırtasiye/, 'egitim'], [/mama|veteriner|kedi|köpek/, 'evcil'], [/hediye|doğum günü/, 'hediye'], [/mobilya|ikea|koçtaş|beyaz eşya/, 'ev'], [/maaş/, 'maas'], [/prim|ikramiye/, 'prim']];
 function guessCat(text, type) {
   const t = trLow(text);
@@ -1562,6 +1569,77 @@ function parseReceipt(text) {
   return {amount, date, store: cap(nice)};
 }
 async function readReceipt(canvas) { const T = await loadTess(); const out = await T.recognize(canvas, 'tur'); return parseReceipt(out && out.data ? out.data.text : ''); }
+/* Optional: read receipts with Claude when the user adds their own API key (stored only on this device) */
+const aiKey = () => { try { return localStorage.getItem('kese.aikey') || ''; } catch (e) { return ''; } };
+let sdkP = null;
+const loadSDK = () => sdkP || (sdkP = import('https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.129.0/+esm').then(m => m.default || m.Anthropic).catch(e => { sdkP = null; throw e; }));
+const blobToB64 = b => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(b); });
+async function readReceiptAI(blob) {
+  const Anthropic = await loadSDK();
+  const client = new Anthropic({apiKey: aiKey(), dangerouslyAllowBrowser: true, maxRetries: 1, timeout: 60000});
+  const cats = catList('gider');
+  const schema = {type: 'object', additionalProperties: false, required: ['is_receipt', 'store', 'amount', 'date', 'category'],
+    properties: {is_receipt: {type: 'boolean'}, store: {type: 'string'}, amount: {type: 'number'}, date: {type: 'string'}, category: {type: 'string', enum: cats.map(c => c.id)}}};
+  const res = await client.beta.messages.create({
+    model: 'claude-opus-5-5',
+    max_tokens: 4000,
+    betas: ['server-side-fallback-2026-07-01'],
+    fallbacks: 'default',
+    output_config: {effort: 'low', format: {type: 'json_schema', schema}},
+    system: 'Türkiye’deki fiş, adisyon ve hesap fotoğraflarından bir harcama kaydı çıkarıyorsun. '
+      + 'amount: ödenen toplam tutar (KDV dahil genel toplam; varsa servis ücreti ve bahşiş dahil), TL cinsinden sayı. '
+      + 'store: işletmenin günlük dilde bilinen kısa adı, örn. "Mado", "Migros", "Opet" (unvan eklerini, şube adını yazma). '
+      + 'date: fişteki tarih, YYYY-AA-GG biçiminde; okunmuyorsa boş bırak. '
+      + 'category: listedeki kimliklerden en uygunu; restoran, kafe ve tatlıcı yemek sayılır. '
+      + 'Görsel bir fiş ya da hesap değilse is_receipt false olsun.',
+    messages: [{role: 'user', content: [
+      {type: 'image', source: {type: 'base64', media_type: blob.type || 'image/jpeg', data: await blobToB64(blob)}},
+      {type: 'text', text: `Bugünün tarihi: ${todayStr()}\nKategoriler:\n${cats.map(c => `${c.id}: ${c.name}`).join('\n')}`}
+    ]}]
+  });
+  if (res.stop_reason === 'refusal') throw new Error('refusal');
+  const tb = res.content.find(b => b.type === 'text');
+  if (!tb) throw new Error('empty');
+  const j = JSON.parse(tb.text);
+  if (!j.is_receipt) return {amount: 0, date: null, store: '', cat: null, notReceipt: true};
+  const t = parseD(j.date).getTime();
+  return {amount: Math.round((+j.amount || 0) * 100) / 100, date: /^\d{4}-\d{2}-\d{2}$/.test(j.date) && t <= Date.now() + 864e5 && t > Date.now() - 366 * 864e5 ? j.date : null,
+    store: cap(String(j.store || '').trim()).slice(0, 40), cat: cats.some(c => c.id === j.category) ? j.category : null};
+}
+function aiErrorText(e) {
+  const st = e && e.status;
+  if (st === 401 || st === 403) return 'API anahtarı geçersiz; fiş telefonda okundu.';
+  if (st === 429) return 'Yapay zeka şu an yoğun; fiş telefonda okundu.';
+  if (st === 400 && /credit|balance/i.test(String(e.message))) return 'API hesabında bakiye yok; fiş telefonda okundu.';
+  return 'Yapay zekaya ulaşılamadı; fiş telefonda okundu.';
+}
+async function extractReceipt(blob, canvas) {
+  let aiNote = '';
+  if (aiKey()) {
+    try { const p = await readReceiptAI(blob); if (p.amount > 0 || p.notReceipt) return {...p, via: 'ai'}; }
+    catch (e) { aiNote = aiErrorText(e); }
+  }
+  const p = await readReceipt(canvas), c = p.store ? guessCat(p.store, 'gider') : null;
+  return {...p, cat: c && c.type === 'gider' ? c.id : null, via: 'ocr', aiNote};
+}
+// Photo in → record out. Opens the form only when the amount could not be read.
+async function autoReceipt(file) {
+  let res; try { res = await shrink(file); } catch (e) { toast('Fotoğraf açılamadı.'); return; }
+  toast(aiKey() ? 'Fiş yapay zekayla okunuyor…' : 'Fiş okunuyor…');
+  let p = null; try { p = await extractReceipt(res.blob, res.canvas); } catch (e) { p = null; }
+  if (p && p.amount > 0) {
+    const cat = p.cat || 'diger', date = p.date || todayStr();
+    const ids = addRecords({type: 'gider', cat, amount: p.amount, note: p.store || 'Fiş', date, method: 'kart', card: S.cards.length ? S.cards[0].id : undefined});
+    const tx = S.tx.find(t => t.id === ids[0]); tx.photo = true; putPhoto(tx.id, res.blob);
+    const d = parseD(date); cur = {y: d.getFullYear(), m: d.getMonth()};
+    save(); render(); buzz(12);
+    toast(`${tx.note} · ${money(p.amount)} · ${catById(cat).name} eklendi${p.aiNote ? ' · ' + p.aiNote : ''}`, {label: 'Düzenle', fn: () => openSheet({tx})});
+    return;
+  }
+  openSheet({note: p && p.store || '', date: p && p.date || undefined, cat: p && p.cat || null});
+  F.photoBlob = res.blob; showThumb(URL.createObjectURL(res.blob));
+  $('#rcMsg').textContent = p && p.notReceipt ? 'Bu bir fiş gibi görünmüyor. Tutarı elle gir; fotoğraf kayda eklenecek.' : 'Tutar okunamadı, elle gir. Fotoğraf kayda eklenecek.';
+}
 function showThumb(url) { const im = $('#rcThumb'); if (url) { im.src = url; im.hidden = false; $('#rcDel').hidden = false; } else { im.removeAttribute('src'); im.hidden = true; $('#rcDel').hidden = true; } }
 $('#rcFile').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f || !F) return;
@@ -1570,15 +1648,16 @@ $('#rcFile').addEventListener('change', async e => {
   if (!F) return;
   F.photoBlob = res.blob; F.photoRemoved = false; showThumb(URL.createObjectURL(res.blob));
   if (F.id) { msg.textContent = 'Fiş eklendi.'; return; }
-  msg.textContent = 'Fiş okunuyor…';
+  msg.textContent = aiKey() ? 'Fiş yapay zekayla okunuyor…' : 'Fiş okunuyor…';
   try {
-    const p = await readReceipt(res.canvas); if (!F) return;
+    const p = await extractReceipt(res.blob, res.canvas); if (!F) return;
     const got = [];
+    if (p.cat && !F.catTouched) { F.cat = p.cat; F.catTouched = true; got.push('kategori'); }
     if (p.amount && !(+F.amt.replace(',', '.') > 0)) { F.amt = String(p.amount).replace('.', ','); got.push('tutar'); }
     if (p.date) { F.date = p.date; got.push('tarih'); }
     if (p.store && !$('#txNote').value.trim()) { $('#txNote').value = p.store; $('#txNote').dispatchEvent(new Event('change')); got.push('mağaza'); }
     paintSheet();
-    msg.textContent = got.length ? `Okundu: ${got.join(', ')}. Kaydetmeden önce kontrol et.` : 'Fişten tutar okunamadı, elle gir.';
+    msg.textContent = (got.length ? `Okundu: ${got.join(', ')}. Kaydetmeden önce kontrol et.` : 'Fişten tutar okunamadı, elle gir.') + (p.aiNote ? ' ' + p.aiNote : '');
   } catch (x) { if (F) msg.textContent = 'Fiş okunamadı (ilk seferde internet gerekir). Fotoğraf yine eklendi.'; }
 });
 $('#rcDel').addEventListener('click', () => { if (!F) return; F.photoBlob = null; F.photoRemoved = true; showThumb(null); $('#rcMsg').textContent = ''; });
@@ -1844,6 +1923,10 @@ document.addEventListener('click', e => {
     else if (act === 'ratesManual') formModal('Kurları elle gir', [['USD', '1 dolar kaç TL?'], ['EUR', '1 euro kaç TL?'], ['GAU', '1 gram altın kaç TL?'], ['CEY', '1 çeyrek altın kaç TL?']].map(([k, l]) => ({k, label: l + ' (boş = otomatik)', t: 'num'})),
       Object.fromEntries(Object.entries(RATES.manual).map(([k, v]) => [k, String(v).replace('.', ',')])),
       v => { RATES.manual = {}; Object.entries(v).forEach(([k, x]) => { if (x > 0) RATES.manual[k] = x; }); saveRates(); render(); });
+    else if (act === 'aiKey') formModal('Anthropic API anahtarı', [{k: 'key', label: 'Anahtar (sk-ant-… ile başlar)', ph: 'sk-ant-...', max: 200}], {}, v => {
+      if (!/^sk-ant-/.test(v.key)) return 'Anahtar “sk-ant-” ile başlamalı.'; try { localStorage.setItem('kese.aikey', v.key); } catch (e) {} render(); toast('Fişler artık yapay zekayla okunacak'); });
+    else if (act === 'aiKeyDel') ask('API anahtarı kaldırılsın mı?', 'Fişler yine telefonda okunmaya devam eder.', 'Kaldır', () => { try { localStorage.removeItem('kese.aikey'); } catch (e) {} render(); });
+    else if (act === 'allRems') { showAllRems = !showAllRems; render(); }
     else if (act === 'snoozeBackup') { S.backupSnooze = Date.now() + 7 * 864e5; save(); render(); }
     else if (act === 'setPin') formModal(getPin() ? 'PIN\'i değiştir' : 'PIN koy', [{k: 'p1', label: '4 haneli PIN', t: 'pin'}, {k: 'p2', label: 'PIN\'i tekrar yaz', t: 'pin'}], {},
       v => { if (!/^\d{4}$/.test(v.p1)) return 'PIN 4 rakam olmalı.'; if (v.p1 !== v.p2) return 'İki PIN aynı değil.';
@@ -1856,7 +1939,7 @@ document.addEventListener('click', e => {
   else if ((b = t.closest('[data-pay]'))) { const f = S.fixed.find(x => x.id === b.dataset.pay); if (f) { const rec = payFixed(f); save(); render(); buzz(12); toast(`${f.name} işlendi`, undoIds([rec.id])); } }
   else if ((b = t.closest('[data-tx]'))) { const x = S.tx.find(y => y.id === b.dataset.tx); if (x) { if (!modal.hidden) closeModal(); openSheet({tx: x}); } }
   else if ((b = t.closest('[data-cat]'))) openCat(b.dataset.cat);
-  else if ((b = t.closest('[data-catlist]'))) { closeModal(); listFilter = {q: '', type: 'all', cat: b.dataset.catlist, all: false}; go('hareketler'); }
+  else if ((b = t.closest('[data-catlist]'))) { closeModal(); listTab = 'gunluk'; listFilter = {q: '', type: 'all', cat: b.dataset.catlist, all: false}; go('hareketler'); }
   else if ((b = t.closest('[data-catadd]'))) { const c = catById(b.dataset.catadd); closeModal(); openSheet({type: c.type, cat: c.id}); }
   else if ((b = t.closest('[data-dismiss]'))) { const td = todayStr(); S.dismissed = {[td]: [...(S.dismissed[td] || []), b.dataset.dismiss]}; save(); render(); }
   else if ((b = t.closest('[data-roll]'))) doRollover(b.dataset.roll, +b.dataset.amt || 0);
@@ -1865,12 +1948,13 @@ document.addEventListener('click', e => {
   else if ((b = t.closest('[data-dedit]'))) editDebt(S.debts.find(x => x.id === b.dataset.dedit));
   else if ((b = t.closest('[data-aedit]'))) editAsset(S.assets.find(x => x.id === b.dataset.aedit));
   else if ((b = t.closest('[data-editcard]'))) editCard(S.cards.find(x => x.id === b.dataset.editcard));
-  else if ((b = t.closest('[data-tagopen]'))) { listFilter = {q: '', type: 'all', cat: '', all: true, tag: b.dataset.tagopen}; go('hareketler'); }
+  else if ((b = t.closest('[data-tagopen]'))) { listTab = 'gunluk'; listFilter = {q: '', type: 'all', cat: '', all: true, tag: b.dataset.tagopen}; go('hareketler'); }
   else if ((b = t.closest('[data-rmode]'))) { rMode = b.dataset.rmode; rYear = null; openReport(); }
   else if ((b = t.closest('[data-ryear]'))) { rYear = (rYear || cur.y) + (+b.dataset.ryear); openYear(); }
   else if ((b = t.closest('[data-switch]'))) { PEOPLE.cur = b.dataset.switch; savePeople(); try { sessionStorage.setItem('kese.picked', '1'); } catch (e) {} location.reload(); }
   else if ((b = t.closest('[data-delperson]'))) { const pp = PEOPLE.list.find(x => x.id === b.dataset.delperson); if (pp) ask(`${pp.name} silinsin mi?`, `${pp.name} adlı kişinin bu telefondaki tüm kayıtları, bütçeleri ve hedefleri silinecek. Bu geri alınamaz.`, 'Sil', () => {
       const k = keyFor(pp); try { [k, k + '.pin', k + '.ui'].forEach(x => localStorage.removeItem(x)); } catch (e) {} PEOPLE.list = PEOPLE.list.filter(x => x !== pp); savePeople(); render(); toast(`${pp.name} silindi`); }); }
+  else if ((b = t.closest('[data-ltab]'))) { listTab = b.dataset.ltab; render(true); }
   else if ((b = t.closest('[data-fall]'))) { listFilter.all = !listFilter.all; render(); }
   else if ((b = t.closest('[data-themeset]'))) { theme = b.dataset.themeset; saveUi(); if (theme === 'system') document.documentElement.removeAttribute('data-theme'); applyTheme(); render(); }
   else if ((b = t.closest('[data-go]'))) go(b.dataset.go);

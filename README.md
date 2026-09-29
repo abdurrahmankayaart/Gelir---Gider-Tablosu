@@ -20,7 +20,8 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Kategori detayı** | Bir kategoriye dokununca son 6 ayın grafiği, ortalamaya göre fark, o kategorinin bütçesi ve bu ayki kayıtları açılır. |
 | **Tüm aylarda arama** | Hareketler'de "Tüm aylar" ile geçmiş tüm kayıtlarda arama. |
 | **Yedek hatırlatıcı · PIN kilidi · Tema** | 30 gündür yedek alınmadıysa hatırlatır. İsteğe bağlı 4 haneli PIN kilidi. Açık / koyu / telefona göre tema. |
-| **Fiş fotoğrafı** | + ekranında "Fiş ekle" ile fotoğraf çek; tutar, tarih ve mağaza telefonda okunur (ilk kullanımda okuma aracı internetten bir kez indirilir). Fotoğraflar yalnızca o telefonda saklanır. |
+| **Fiş / hesap fotoğrafı** | Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çek; işletme, tutar, tarih ve kategori (ör. Mado → Yeme-içme) okunup kayıt **kendiliğinden eklenir**. Okuma telefonda ücretsiz yapılır; Ayarlar → Fiş okuma'dan kendi Anthropic API anahtarını eklersen Claude ile çok daha isabetli okunur (fiş başına ~0,01–0,02 $). Fotoğraflar yalnızca o telefonda saklanır. |
+| **Günlük / Sabit ayrımı** | Ana ekran yalnızca günlük harcamalara odaklanır; kira, fatura, abonelik, maaş, taksitler ve kart ekstreleri Hareketler → **Sabit harcamalar** sekmesindedir. |
 | **Hatırlatmalar** | Ana sayfanın üstünde: yaklaşan sabit ödemeler, dolmak üzere olan bütçeler, kart son ödeme günleri, vadesi gelen borçlar, akşam hâlâ kayıt girilmediyse uyarı. |
 | **Ay sonu devri** | Önceki aydan para arttıysa hedefe aktarma ya da bu aya devretme seçeneği. |
 | **Borç & alacak** | Kime ne kadar borç verdin / kimden aldın; kısmi ödemeler, vade takibi. |
