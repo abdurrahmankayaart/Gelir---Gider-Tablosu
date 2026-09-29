@@ -8,6 +8,8 @@ on:
 jobs:
   apk:
     runs-on: ubuntu-latest
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,3 +30,19 @@ jobs:
         with:
           name: hesap-kitap-android-test
           path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Play Store paketi (AAB) derle
+        if: env.HAS_KEY == 'true'
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        working-directory: android
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          KEYSTORE_FILE="$RUNNER_TEMP/upload.jks" ./gradlew bundleRelease --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('android/app/build/outputs/bundle/release/app-release.aab') != '' }}
+        with:
+          name: hesap-kitap-play-store
+          path: android/app/build/outputs/bundle/release/app-release.aab

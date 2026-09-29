@@ -21,8 +21,8 @@ Uygulama, web sürümüyle aynı kodu kullanan gerçek bir iOS ve Android uygula
 ## Google Play'e yüklemek (bir kerelik 25 dolar)
 1. https://play.google.com/console adresinde geliştirici hesabı aç (kimlik doğrulaması birkaç gün sürebilir).
 2. **Uygulama oluştur** → ad: Hesap Kitap, dil: Türkçe, ücretsiz.
-3. İmzalı paket (AAB) gerekiyor. Hazır olduğunda bana söyle; imza anahtarını üretip GitHub'da mağazaya hazır `.aab` dosyasını derleyen adımı ekleyeceğim. Anahtarı GitHub'ın gizli ayarlarına (Secrets) senin eklemen gerekecek.
-4. Mağaza sayfası için: kısa açıklama, uzun açıklama, en az 2 ekran görüntüsü, 512×512 simge (`icon-512.png`), gizlilik politikası bağlantısı.
+3. İmzalı paket (AAB): sana gönderilen `play-anahtari.txt` dosyasındaki 4 değeri GitHub → depo → Settings → Secrets and variables → Actions bölümüne ekle. Sonraki her derlemede Actions sayfasında `hesap-kitap-play-store` (içinde `app-release.aab`) çıkar; Play Console → Test → Kapalı test → Yeni sürüm'e bu dosyayı yükle. İlk yüklemede "Play Uygulama İmzalama"yı kabul et.
+4. Mağaza sayfası: metinler `store/magaza-metinleri.md`, ekran görüntüleri `store/ekran-goruntuleri/android/`, öne çıkan görsel `store/play-one-cikan-gorsel.png`, simge `icon-512.png`.
 5. Yeni kişisel hesaplarda Google, yayından önce **12 kişiyle 14 gün kapalı test** istiyor.
 
 ## App Store'a yüklemek (yıllık 99 dolar)
@@ -31,7 +31,7 @@ Uygulama, web sürümüyle aynı kodu kullanan gerçek bir iOS ve Android uygula
 3. Yükleme için iki yol var:
    - **Mac ile:** `npm install && npm run ios` → Xcode açılır → Product → Archive → Distribute App.
    - **Mac olmadan:** App Store Connect → Kullanıcılar ve Erişim → Entegrasyonlar'dan bir **API anahtarı** oluşturup bana haber ver. Anahtarları GitHub Secrets'a eklersin; ben de GitHub'ın Mac makinesinde imzalayıp TestFlight'a yükleyen adımı eklerim.
-4. Mağaza sayfası için: 6,9" iPhone ekran görüntüleri, açıklama, anahtar kelimeler, gizlilik politikası bağlantısı. "Gizlilik" bölümünde **Veri toplanmıyor** seçeneği işaretlenir.
+4. Mağaza sayfası: metinler ve anahtar kelimeler `store/magaza-metinleri.md`, 6,9" iPhone ekran görüntüleri `store/ekran-goruntuleri/iphone/`. "Gizlilik" bölümünde **Veri toplanmıyor** seçeneği işaretlenir.
 5. Apple incelemesi genelde 1–3 gün sürer.
 
 ## Bilmen gerekenler
