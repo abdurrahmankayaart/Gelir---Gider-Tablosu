@@ -15,7 +15,7 @@ Aylık harcamanı kalem kalem gör. Fişin fotoğrafını çek, kendiliğinden e
 
 **Yaş sınırı:** 4+ (App Store), Herkes (Google Play)
 
-**Gizlilik politikası:** https://abdurrahmankayaart.github.io/Gelir---Gider-Tablosu/privacy.html
+**Gizlilik politikası:** https://abdurrahmankayaart.github.io/hesapkitap/privacy.html
 
 **Destek e-postası:** abdurrahmankayaart@gmail.com
 
