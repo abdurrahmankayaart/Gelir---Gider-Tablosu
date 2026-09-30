@@ -853,7 +853,7 @@ function go(v) { if (v !== view) buzz(5); view = v; saveUi(); if (location.hash.
 
 /* ================= ÖZET ================= */
 /* Üst kart görünümü: 'klasik' (tutarlar), 'pay' (günlük pay), 'aliskanlik' (olumlu alışkanlıklar), 'gizli' (tutarlar dokununca açılır) */
-let heroStyle = (() => { try { return localStorage.getItem('kese.hero') || 'klasik'; } catch (e) { return 'klasik'; } })();
+let heroStyle = (() => { try { return localStorage.getItem('kese.hero') || 'bugun'; } catch (e) { return 'klasik'; } })();
 let heroPeek = false;
 function heroAlt(inc, exp, sav, elapsed, dim, st, dailyTx) {
   const cm = isCurMonth(), today = dstr(now0), daysLeft = cm ? dim - elapsed + 1 : 0;
