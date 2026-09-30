@@ -885,7 +885,7 @@ function renderOzet(el) {
     <div class="hello-date">${isCurMonth() ? dateLine() : 'Geçmiş ay özeti'}${st >= 2 && isCurMonth() ? `<span class="streak">${st} gündür her gün kayıt girdin</span>` : ''}</div>
     ${heroMain(inc, exp, sav, left, base, elapsed, dim)}
     <div class="io">
-      <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${inc && inc > exp ? `tasarruf oranı %${pctOf(inc - exp, inc)}` : '&nbsp;'}</em></div>
+      <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${!inc ? 'maaş ya da diğer gelirlerini ekle' : inc > exp ? `tasarruf oranı %${pctOf(inc - exp, inc)}` : (() => { const n = monthTx(cur.y, cur.m).filter(t => t.type === 'gelir').length; return n > 1 ? `${n} gelir kaydı` : 'bu ayki gelirin'; })()}</em></div>
       <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${money(exp)}</b><em class="num">${exp ? `günlük ${money(dailyExp)} · sabit ${money(exp - dailyExp)}` : '&nbsp;'}</em></div>
     </div>
   </section>`;
