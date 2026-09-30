@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F5F6F8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1113" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F3EDE4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141A29" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hesap Kitap">
@@ -22,11 +22,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EFF1F4; --ink:#15181E; --ink-2:#4B5261; --muted:#7D8494; --line:#E4E7EC;
-  --accent:#12805C; --on-accent:#FFFFFF; --accent-soft:#DDF2E8; --ring:#12805C;
-  --in:#1baf7a; --out:#eb6834; --save:#4a3aa7;
-  --good:#0B7A3B; --good-soft:#DDF3E4; --warn:#8F5B00; --warn-soft:#FCEFCF; --bad:#C0322B; --bad-soft:#FBE0DE;
-  --grid:#E8EAEE; --axis:#C5CAD3; --shadow:0 1px 2px rgba(21,24,30,.05),0 6px 20px rgba(21,24,30,.06); --scrim:rgba(12,14,18,.42);
+  --bg:#F3EDE4; --surface:#FBF8F3; --surface-2:#EAE0D3; --ink:#212C46; --ink-2:#4A5063; --muted:#6E685C; --line:#E0D5C6;
+  --accent:#212C46; --on-accent:#FBF8F3; --accent-soft:#E4E1DA; --ring:#A66540;
+  --teak:#A66540; --on-teak:#FFFFFF; --canvas:#D4C4B0;
+  --in:#606A5F; --out:#932C2E; --save:#A66540;
+  --good:#4E594D; --good-soft:#E1E4DC; --warn:#8A4F2E; --warn-soft:#F1E1D2; --bad:#932C2E; --bad-soft:#F3DEDA;
+  --grid:#E6DCCF; --axis:#C9BCAB; --shadow:0 1px 2px rgba(33,44,70,.06),0 8px 22px rgba(33,44,70,.07); --scrim:rgba(20,26,41,.45);
   --tint:13%; --tint-2:24%;
   --display:"Bricolage Grotesque",ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -34,21 +35,23 @@
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0F1113; --surface:#181B1F; --surface-2:#22262B; --ink:#F2F4F6; --ink-2:#C4C9D1; --muted:#8B919B; --line:#2A2E34;
-    --accent:#3DDC97; --on-accent:#0B1F17; --accent-soft:#16352A; --ring:#3DDC97;
-    --in:#199e70; --out:#d95926; --save:#9085e9;
-    --good:#4CCB6A; --good-soft:#143020; --warn:#F0B443; --warn-soft:#3A2D12; --bad:#EF6B6B; --bad-soft:#3A1A1A;
-    --grid:#24282D; --axis:#3A3F46; --shadow:0 1px 2px rgba(0,0,0,.4); --scrim:rgba(0,0,0,.6);
+    --bg:#141A29; --surface:#212C46; --surface-2:#2A3654; --ink:#F1EADF; --ink-2:#D4C4B0; --muted:#A39A8C; --line:#323E5E;
+    --accent:#D9956A; --on-accent:#212C46; --accent-soft:#3D2F2A; --ring:#D9956A;
+    --teak:#C27A4E; --on-teak:#FFFFFF; --canvas:#D4C4B0;
+    --in:#9CAA99; --out:#D9605F; --save:#D9956A;
+    --good:#A9B8A5; --good-soft:#26302A; --warn:#D9956A; --warn-soft:#3A2B22; --bad:#E07372; --bad-soft:#3A1E22;
+    --grid:#2A3552; --axis:#3D4A6C; --shadow:0 1px 2px rgba(0,0,0,.45); --scrim:rgba(0,0,0,.6);
     --tint:18%; --tint-2:30%;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0F1113; --surface:#181B1F; --surface-2:#22262B; --ink:#F2F4F6; --ink-2:#C4C9D1; --muted:#8B919B; --line:#2A2E34;
-  --accent:#3DDC97; --on-accent:#0B1F17; --accent-soft:#16352A; --ring:#3DDC97;
-  --in:#199e70; --out:#d95926; --save:#9085e9;
-  --good:#4CCB6A; --good-soft:#143020; --warn:#F0B443; --warn-soft:#3A2D12; --bad:#EF6B6B; --bad-soft:#3A1A1A;
-  --grid:#24282D; --axis:#3A3F46; --shadow:0 1px 2px rgba(0,0,0,.4); --scrim:rgba(0,0,0,.6);
+  --bg:#141A29; --surface:#212C46; --surface-2:#2A3654; --ink:#F1EADF; --ink-2:#D4C4B0; --muted:#A39A8C; --line:#323E5E;
+  --accent:#D9956A; --on-accent:#212C46; --accent-soft:#3D2F2A; --ring:#D9956A;
+  --teak:#C27A4E; --on-teak:#FFFFFF; --canvas:#D4C4B0;
+  --in:#9CAA99; --out:#D9605F; --save:#D9956A;
+  --good:#A9B8A5; --good-soft:#26302A; --warn:#D9956A; --warn-soft:#3A2B22; --bad:#E07372; --bad-soft:#3A1E22;
+  --grid:#2A3552; --axis:#3D4A6C; --shadow:0 1px 2px rgba(0,0,0,.45); --scrim:rgba(0,0,0,.6);
   --tint:18%; --tint-2:30%;
   color-scheme:dark;
 }
@@ -207,6 +210,18 @@ h3{font-size:16px;font-weight:700}
 .segs{display:flex;gap:6px;flex-wrap:wrap}
 .seg-b{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:700;color:var(--ink-2)}
 .seg-b[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:transparent}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .wd{font-size:11px;color:var(--muted);text-align:center;font-weight:700;padding-bottom:2px}
+.cal button{aspect-ratio:1/1.08;border:0;border-radius:11px;background:color-mix(in srgb,var(--out) var(--h,0%),var(--surface-2));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:2px;color:var(--ink);min-width:0}
+.cal button b{font-size:13px;line-height:1.1}
+.cal button small{font-size:10.5px;font-weight:700;color:var(--ink-2);min-height:13px;line-height:1.2;font-variant-numeric:tabular-nums}
+.cal button.hot b,.cal button.hot small{color:#fff}
+.cal button.fut{opacity:.45}
+.cal button.today b{text-decoration:underline;text-underline-offset:2px}
+.cal button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.cal-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cal-sum small{display:block;font-size:11.5px;color:var(--muted);font-weight:600}
+.cal-sum b{font-family:var(--display);font-size:17px}
 .day-h{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;padding:14px 4px 6px;text-transform:uppercase;letter-spacing:.05em}
 .txg{border-radius:20px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
 .txw{position:relative;background:var(--bad);border-bottom:1px solid var(--line)}
@@ -392,6 +407,21 @@ details.fold[open]>summary .i{transform:rotate(180deg)}
 .confetti{position:fixed;z-index:95;left:50%;top:40%;width:8px;height:13px;border-radius:2px;pointer-events:none;animation:burst 1.2s cubic-bezier(.2,.8,.3,1) forwards}
 @keyframes burst{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* Palet vurguları */
+.brand svg rect,.brand svg circle{fill:var(--teak)}
+.brand svg path{fill:var(--on-teak);stroke:var(--on-teak)}
+.brand svg path:first-of-type{fill:none}
+.fab{background:var(--teak);color:var(--on-teak);box-shadow:0 10px 24px color-mix(in srgb,var(--teak) 40%,transparent)}
+.qin:focus-within{border-color:var(--teak)}
+.hero{background:#212C46;color:#F1EADF;border-radius:26px;padding:18px 16px 16px;--muted:#AFA696;--ink-2:#D4C4B0;--surface:#2A3654;--surface-2:#34405F;--line:#3A4768;--ink:#F1EADF;--out:#C8514F;--save:#C27A4E;--in:#9CAA99;--warn-soft:#3D2F2A;--warn:#E3A57C}
+.hero .big{color:#D4C4B0}
+.hero .big.neg{color:#E07372}
+.hero .io .card{border-color:transparent}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(160deg,#2A3654,#212C46);border:1px solid #323E5E}}
+:root[data-theme="dark"] .hero{background:linear-gradient(160deg,#2A3654,#212C46);border:1px solid #323E5E}
+/* kategori renklerini palete yaklaştır */
+[style*="--c"]{--c2:color-mix(in oklab,var(--c) 58%,#8C7A64);--c-bg:color-mix(in srgb,var(--c2) var(--tint),var(--surface));--c-bub:color-mix(in srgb,var(--c2) var(--tint-2),var(--surface));--c-ink:color-mix(in srgb,var(--c2) 78%,var(--ink))}
+.avatar{background:#932C2E!important;color:#F1EADF!important}
 </style>
 
 <div class="app" id="app">
@@ -1053,7 +1083,33 @@ window.addEventListener('scroll', () => { tip.hidden = true; }, {passive: true})
 
 /* ================= HAREKETLER ================= */
 let listTab = 'gunluk';
-const ltabs = () => `<div class="tabs" style="grid-template-columns:1fr 1fr" role="group" aria-label="Harcama türü"><button data-ltab="gunluk" aria-pressed="${listTab === 'gunluk'}">Günlük harcamalar</button><button data-ltab="sabit" aria-pressed="${listTab === 'sabit'}">Sabit harcamalar</button></div>`;
+const ltabs = () => `<div class="tabs" style="grid-template-columns:1fr 1fr 1fr" role="group" aria-label="Görünüm"><button data-ltab="gunluk" aria-pressed="${listTab === 'gunluk'}">Günlük</button><button data-ltab="sabit" aria-pressed="${listTab === 'sabit'}">Sabit</button><button data-ltab="takvim" aria-pressed="${listTab === 'takvim'}">Takvim</button></div>`;
+let calSel = null, calAll = false;
+const shortM = v => v >= 10000 ? Math.round(v / 1000) + 'b' : v >= 1000 ? (Math.round(v / 100) / 10).toString().replace('.', ',') + 'b' : String(Math.round(v));
+function calHtml() {
+  const y = cur.y, m = cur.m, n = new Date(y, m + 1, 0).getDate(), first = (new Date(y, m, 1).getDay() + 6) % 7, today = dstr(now0);
+  const txs = monthTx(y, m).filter(t => t.type === 'gider' && (calAll || (!t.fixedId && !t.inst)));
+  const per = {}; txs.forEach(t => { per[t.date] = (per[t.date] || 0) + t.amount; });
+  const vals = Object.values(per), max = Math.max(0, ...vals), total = vals.reduce((a, b) => a + b, 0);
+  const isCur = y === now0.getFullYear() && m === now0.getMonth(), elapsed = isCur ? now0.getDate() : n;
+  const topD = Object.keys(per).sort((a, b) => per[b] - per[a])[0], zero = Array.from({length: elapsed}, (_, i) => dstr(new Date(y, m, i + 1))).filter(d => !per[d]).length;
+  if (!calSel || calSel.slice(0, 7) !== mkey(y, m)) calSel = isCur ? today : topD || null;
+  let h = `<div class="card"><div class="cal-sum num"><div><small>Toplam</small><b>${money(total)}</b></div><div><small>Günlük ortalama</small><b>${money(Math.round(total / Math.max(1, elapsed)))}</b></div><div><small>Harcamasız gün</small><b>${zero}</b></div></div>
+    <div class="segs" style="margin:12px 0 10px"><button class="seg-b" data-calall="0" aria-pressed="${!calAll}">Günlük harcamalar</button><button class="seg-b" data-calall="1" aria-pressed="${calAll}">Sabitler dahil</button></div>
+    <div class="cal" role="grid" aria-label="${AY[m]} ${y} harcama takvimi">${['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map(w => `<span class="wd">${w}</span>`).join('')}${'<span></span>'.repeat(first)}`;
+  for (let d = 1; d <= n; d++) {
+    const k = dstr(new Date(y, m, d)), v = per[k] || 0, heat = v ? Math.round(14 + 70 * Math.pow(v / max, .7)) : 0;
+    h += `<button class="${heat > 48 ? 'hot' : ''}${k === today ? ' today' : ''}${k > today ? ' fut' : ''}" style="--h:${heat}%" data-calday="${k}" aria-pressed="${k === calSel}" aria-label="${d} ${AY[m]}: ${v ? money(v) : 'harcama yok'}"><b>${d}</b><small>${v ? shortM(v) : ''}</small></button>`;
+  }
+  h += `</div>${topD ? `<p class="hint" style="margin-top:10px">En çok harcadığın gün <b style="color:var(--ink)">${parseD(topD).getDate()} ${AY[m]} ${GUN[parseD(topD).getDay()]}</b>: ${money(per[topD])}</p>` : ''}</div>`;
+  if (calSel) {
+    const dt = parseD(calSel), list = monthTx(y, m).filter(t => t.date === calSel && (calAll || (!t.fixedId && !t.inst))).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    h += `<div><div class="day-h"><span>${dt.getDate()} ${AY[dt.getMonth()]} · ${GUN[dt.getDay()]}</span><span class="num">${sum(list, 'gider') ? '−' + money(sum(list, 'gider')) : ''}</span></div>${list.length ? `<div class="txg">${list.map(txRow).join('')}</div>` : `<div class="card empty">Bu gün kayıt yok.</div>`}</div>`;
+  }
+  return h;
+}
+const txRow = t => { const c = catById(t.cat);
+  return `<div class="txw"><span class="del">Sil</span><button class="tx" data-tx="${t.id}" ${cs(c)}><span class="bub">${ci(c)}</span><span style="min-width:0"><div class="t">${esc(t.note || c.name)}${t.inst ? `<span class="badge">${t.inst.i}/${t.inst.n} taksit</span>` : ''}${t.photo ? `<span class="badge">fiş</span>` : ''}</div><div class="m">${esc(c.name)}${t.method === 'nakit' ? ' · Nakit' : t.card && S.cards.length > 1 ? ' · ' + esc((S.cards.find(k => k.id === t.card) || {}).name || '') : ''}${t.fixedId ? ' · sabit' : ''}${(t.tags || []).map(g => `<span class="ttag">#${esc(g)}</span>`).join('')}</div></span><span class="a num ${t.type === 'gelir' ? 'in' : ''}">${t.type === 'gelir' ? '+' : '−'}${money(t.amount)}</span></button></div>`; };
 function fixedPageHtml() {
   const txs = monthTx(cur.y, cur.m), fx = txs.filter(t => t.fixedId || t.inst);
   const paidIds = new Set(txs.filter(t => t.fixedId).map(t => t.fixedId));
@@ -1094,6 +1150,7 @@ function fixedPageHtml() {
 }
 function renderList(el) {
   if (listTab === 'sabit') { el.innerHTML = ltabs() + fixedPageHtml(); return; }
+  if (listTab === 'takvim') { el.innerHTML = ltabs() + calHtml(); return; }
   const txs = (listFilter.all ? S.tx : monthTx(cur.y, cur.m)).filter(t => !t.fixedId && !t.inst), used = [...new Set(txs.map(t => t.cat))], q = trLow(listFilter.q);
   const tagsHere = [...new Set(txs.flatMap(t => t.tags || []))].sort();
   const f = txs.filter(t => (listFilter.type === 'all' || t.type === listFilter.type) && (!listFilter.cat || t.cat === listFilter.cat) && (!listFilter.tag || (t.tags || []).includes(listFilter.tag)) &&
@@ -1110,8 +1167,7 @@ function renderList(el) {
   days.forEach(d => {
     const dt = parseD(d), g = groups[d], dayE = sum(g, 'gider');
     h += `<div><div class="day-h"><span>${dt.getDate()} ${AY[dt.getMonth()]}${dt.getFullYear() !== now0.getFullYear() ? ' ' + dt.getFullYear() : ''} · ${GUN[dt.getDay()]}</span><span class="num">${dayE ? '−' + money(dayE) : ''}</span></div><div class="txg">`;
-    g.forEach(t => { const c = catById(t.cat);
-      h += `<div class="txw"><span class="del">Sil</span><button class="tx" data-tx="${t.id}" ${cs(c)}><span class="bub">${ci(c)}</span><span style="min-width:0"><div class="t">${esc(t.note || c.name)}${t.inst ? `<span class="badge">${t.inst.i}/${t.inst.n} taksit</span>` : ''}${t.photo ? `<span class="badge">fiş</span>` : ''}</div><div class="m">${esc(c.name)}${t.method === 'nakit' ? ' · Nakit' : t.card && S.cards.length > 1 ? ' · ' + esc((S.cards.find(k => k.id === t.card) || {}).name || '') : ''}${t.fixedId ? ' · sabit' : ''}${(t.tags || []).map(g => `<span class="ttag">#${esc(g)}</span>`).join('')}</div></span><span class="a num ${t.type === 'gelir' ? 'in' : ''}">${t.type === 'gelir' ? '+' : '−'}${money(t.amount)}</span></button></div>`; });
+    g.forEach(t => { h += txRow(t); });
     h += `</div></div>`;
   });
   if (allDays.length > days.length) h += `<p class="hint" style="text-align:center">En yeni ${days.length} gün gösteriliyor. Daraltmak için ara ya da kategori seç.</p>`;
@@ -1421,7 +1477,7 @@ function renderSettings(el) {
     <div>${S.cards.length ? S.cards.map(c => `<div class="set-i" style="--c:#64748B"><span class="bub">${svgI('kredi')}</span><div><div class="t">${esc(c.name)}</div><div class="m num">Kesim ${c.cutDay} · son ödeme ${c.dueDay}${c.limit ? ' · limit ' + money(c.limit) : ''}</div></div><button class="btn sm" data-editcard="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Henüz kart eklenmedi.</p>'}</div>
     <button class="btn sm" data-act="newCard" style="margin-top:10px">+ Kart ekle</button>`)}
   ${fold('tags', 'Etiketler', Object.keys(allTags()).length ? Object.keys(allTags()).length + ' etiket' : '', `<p class="hint" style="margin-bottom:6px">Kayıt eklerken “#tatil” gibi etiket koy; bir etiketin toplam maliyetini burada gör.</p>
-    <div>${(() => { const tg = Object.entries(allTags()).sort((a, b) => b[1].sum - a[1].sum); return tg.length ? tg.map(([t, o]) => `<button class="set-i" data-tagopen="${esc(t)}" style="width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding-inline:0"><span class="bub" style="--c:#12805C"><b style="font-size:15px">#</b></span><span><span class="t" style="display:block">${esc(t)}</span><span class="m" style="display:block">${o.n} kayıt</span></span><b class="num">${money(o.sum)}</b></button>`).join('') : '<p class="hint">Henüz etiket yok.</p>'; })()}</div>`)}
+    <div>${(() => { const tg = Object.entries(allTags()).sort((a, b) => b[1].sum - a[1].sum); return tg.length ? tg.map(([t, o]) => `<button class="set-i" data-tagopen="${esc(t)}" style="width:100%;border:0;border-top:1px solid var(--line);background:none;text-align:left;padding-inline:0"><span class="bub" style="--c:#A66540"><b style="font-size:15px">#</b></span><span><span class="t" style="display:block">${esc(t)}</span><span class="m" style="display:block">${o.n} kayıt</span></span><b class="num">${money(o.sum)}</b></button>`).join('') : '<p class="hint">Henüz etiket yok.</p>'; })()}</div>`)}
   ${fold('cats', 'Kendi kategorilerin', S.customCats.length ? S.customCats.length + ' kategori' : '', `<div>${S.customCats.length ? S.customCats.map(c => `<div class="set-i" ${cs(c)}><span class="bub">${ci(c)}</span><div><div class="t">${esc(c.name)}</div><div class="m">${c.type === 'gelir' ? 'Gelir' : 'Gider'}</div></div><button class="btn sm" data-editcat="${c.id}">Düzenle</button></div>`).join('') : '<p class="hint">Listede olmayan bir kalem varsa (örn. Araba bakımı, Kreş) buradan ekle.</p>'}</div>
     <button class="btn sm" data-act="newCat" style="margin-top:10px">+ Kategori ekle</button>`)}
   <section class="card"><div class="sec-h"><h2>E-tablodan aktar</h2></div>
@@ -1442,7 +1498,7 @@ function renderSettings(el) {
   <section class="card"><div class="sec-h"><h2>Sıfırla</h2></div><div class="row">
     ${S.sample ? '<button class="btn sm" data-act="clearSample">Örnek verileri sil</button>' : '<button class="btn sm" data-act="loadSample">Örnek verileri yükle</button>'}
     <button class="btn sm danger" data-act="wipe">Tüm verileri sil</button><button class="btn sm" data-act="tour">Tanıtım turunu göster</button></div>
-    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Hesap Kitap 3.2</p></section>`;
+    <p class="hint" style="margin-top:10px">Toplam ${S.tx.length} kayıt · Hesap Kitap 3.3</p></section>`;
   $('#impFile', el).addEventListener('change', e => readFile(e.target.files[0], doImport));
   $('#restoreFile', el).addEventListener('change', e => readFile(e.target.files[0], restore));
 }
@@ -1941,6 +1997,8 @@ document.addEventListener('click', e => {
   else if ((b = t.closest('[data-delperson]'))) { const pp = PEOPLE.list.find(x => x.id === b.dataset.delperson); if (pp) ask(`${pp.name} silinsin mi?`, `${pp.name} adlı kişinin bu telefondaki tüm kayıtları, bütçeleri ve hedefleri silinecek. Bu geri alınamaz.`, 'Sil', () => {
       const k = keyFor(pp); try { [k, k + '.pin', k + '.ui'].forEach(x => localStorage.removeItem(x)); } catch (e) {} PEOPLE.list = PEOPLE.list.filter(x => x !== pp); savePeople(); render(); toast(`${pp.name} silindi`); }); }
   else if ((b = t.closest('[data-ltab]'))) { listTab = b.dataset.ltab; render(true); }
+  else if ((b = t.closest('[data-calday]'))) { calSel = b.dataset.calday; buzz(5); render(); }
+  else if ((b = t.closest('[data-calall]'))) { calAll = b.dataset.calall === '1'; render(); }
   else if ((b = t.closest('[data-fall]'))) { listFilter.all = !listFilter.all; render(); }
   else if ((b = t.closest('[data-themeset]'))) { theme = b.dataset.themeset; saveUi(); if (theme === 'system') document.documentElement.removeAttribute('data-theme'); applyTheme(); render(); }
   else if ((b = t.closest('[data-go]'))) go(b.dataset.go);
@@ -2033,7 +2091,7 @@ function askName(next, title = 'Hoş geldin') {
 function askStart() {
   showWelcome(`<div class="w-hi anim">Memnun oldum,<span>${esc(ME.name)}</span></div><p class="w-sub">Nasıl başlamak istersin?</p>
     <div class="people">
-      <button class="w-opt" data-wstart="blank"><span class="bub" style="--c:#12805C">${svgI('digerg', 22)}</span><span><b>Hemen başla</b><small>Harcamalarını, gelirini ve sabit ödemelerini sen gir</small></span></button>
+      <button class="w-opt" data-wstart="blank"><span class="bub" style="--c:#A66540">${svgI('digerg', 22)}</span><span><b>Hemen başla</b><small>Harcamalarını, gelirini ve sabit ödemelerini sen gir</small></span></button>
       <button class="w-opt" data-wstart="sample"><span class="bub">${svgI('chart', 22)}</span><span><b>Önce örnek verilerle gezeyim</b><small>Uydurma kayıtlar, tek dokunuşla silinir</small></span></button></div>`);
   welcome.onclick = e => {
     const b = e.target.closest('[data-wprof],[data-wstart]'); if (!b) return;

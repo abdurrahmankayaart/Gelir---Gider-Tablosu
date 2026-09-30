@@ -18,6 +18,7 @@ Kurulum, sunucu ya da hesap gerektirmez. Veriler telefonun/tarayıcının kendi 
 | **Özet** | Ayın geliri, gideri, kalanı, tasarruf oranı; geçen ayın aynı dönemine göre fark; kategori dağılımı (bütçe çizgisiyle); günlük harcama grafiği; son 6 ay gelir-gider. |
 | **Otomatik sabit kalemler** | Kira, fatura, abonelik ve **maaş gibi sabit gelirler**. "Otomatik" işaretlenenler günü gelince kendiliğinden eklenir; diğerleri "Ödendi / Geldi" ile tek dokunuşta işlenir. |
 | **Kategori detayı** | Bir kategoriye dokununca son 6 ayın grafiği, ortalamaya göre fark, o kategorinin bütçesi ve bu ayki kayıtları açılır. |
+| **Aylık takvim** | Hareketler → Takvim: ayın her günü ne kadar harcandığı renk yoğunluğuyla görünür; güne dokununca o günün kayıtları açılır. Günlük ortalama, harcamasız gün sayısı, en pahalı gün; istersen sabit ödemeler dahil. |
 | **Tüm aylarda arama** | Hareketler'de "Tüm aylar" ile geçmiş tüm kayıtlarda arama. |
 | **Yedek hatırlatıcı · PIN kilidi · Tema** | 30 gündür yedek alınmadıysa hatırlatır. İsteğe bağlı 4 haneli PIN kilidi. Açık / koyu / telefona göre tema. |
 | **Fiş / hesap fotoğrafı** | Ana sayfadaki kamerayla fişin ya da hesabın fotoğrafını çek; işletme, tutar, tarih ve kategori (ör. Mado → Yeme-içme) okunup kayıt **kendiliğinden eklenir**. Okuma tamamen telefonda ve ücretsiz yapılır, anahtar ya da hesap gerekmez. Fotoğraflar yalnızca o telefonda saklanır. |

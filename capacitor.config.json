@@ -2,7 +2,7 @@
   "appId": "com.hesapkitap.app",
   "appName": "Hesap Kitap",
   "webDir": "www",
-  "backgroundColor": "#F5F6F8",
+  "backgroundColor": "#F3EDE4",
   "ios": {
     "contentInset": "never"
   },

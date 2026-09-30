@@ -6,8 +6,8 @@
   "start_url": "./#ozet",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F2F3F6",
-  "theme_color": "#1F2A44",
+  "background_color": "#F3EDE4",
+  "theme_color": "#212C46",
   "icons": [
     {
       "src": "icon-192.png",
