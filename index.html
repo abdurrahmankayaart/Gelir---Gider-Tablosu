@@ -413,9 +413,11 @@ details.fold[open]>summary .i{transform:rotate(180deg)}
 .brand svg path:first-of-type{fill:none}
 .fab{background:var(--teak);color:var(--on-teak);box-shadow:0 10px 24px color-mix(in srgb,var(--teak) 40%,transparent)}
 .qin:focus-within{border-color:var(--teak)}
-.hero{background:#212C46;color:#F1EADF;border-radius:26px;padding:18px 16px 16px;--muted:#AFA696;--ink-2:#D4C4B0;--surface:#2A3654;--surface-2:#34405F;--line:#3A4768;--ink:#F1EADF;--out:#C8514F;--save:#C27A4E;--in:#9CAA99;--warn-soft:#3D2F2A;--warn:#E3A57C}
+.hero{background:#212C46;color:#F1EADF;border-radius:26px;padding:18px 16px 16px;--muted:#AFA696;--ink-2:#D4C4B0;--surface:#2A3654;--surface-2:#34405F;--line:#3A4768;--ink:#F1EADF;--out:#C9855A;--save:#9CAA99;--in:#9CAA99;--warn-soft:#3D2F2A;--warn:#E3A57C}
 .hero .big{color:#D4C4B0}
-.hero .big.neg{color:#E07372}
+.hero-note{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--surface);font-size:13.5px;color:var(--ink-2);line-height:1.4}
+.hero-note span{flex:1 1 200px}
+.hero-note .btn{background:#D4C4B0;color:#212C46;border-color:transparent}
 .hero .io .card{border-color:transparent}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hero{background:linear-gradient(160deg,#2A3654,#212C46);border:1px solid #323E5E}}
 :root[data-theme="dark"] .hero{background:linear-gradient(160deg,#2A3654,#212C46);border:1px solid #323E5E}
@@ -830,6 +832,25 @@ function render(animate) {
 function go(v) { if (v !== view) buzz(5); view = v; saveUi(); if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v); render(true); window.scrollTo(0, 0); }
 
 /* ================= ÖZET ================= */
+/* Ana rakam: eksiye düşünce kırmızı "−" yerine harcanan tutar ve yumuşak bir yol gösterici. */
+function heroMain(inc, exp, sav, left, base, elapsed, dim) {
+  const leftDays = isCurMonth() ? dim - elapsed + 1 : 0;
+  if (!inc) return `<div class="big num">${money(exp)}</div>
+    <div class="sub">${AY[cur.m]} ayında harcadığın</div>
+    <div class="hero-note"><span>Gelirini eklersen ay sonuna ne kadar kaldığını da gösteririz.</span><button class="btn sm" data-act="addIncome">+ Gelir ekle</button></div>`;
+  if (left >= 0) return `<div class="big num">${money(left)}</div>
+    <div class="sub">${AY[cur.m]} ayında elinde kalan</div>
+    <div class="split" role="img" aria-label="Gelirin dağılımı">
+      ${exp ? `<i style="width:${exp / base * 100}%;background:var(--out)"></i>` : ''}${sav > 0 ? `<i style="width:${sav / base * 100}%;background:var(--save)"></i>` : ''}${left > 0 ? `<i style="flex:1;background:var(--surface-2)"></i>` : ''}
+    </div>
+    <div class="split-l num"><span><i class="dot" style="background:var(--out)"></i>Harcama ${money(exp)}</span>${sav > 0 ? `<span><i class="dot" style="background:var(--save)"></i>Birikim ${money(sav)}</span>` : ''}${left > 0 ? `<span><i class="dot" style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--axis)"></i>Kalan %${pctOf(left, inc)}</span>` : ''}</div>`;
+  const over = -left;
+  return `<div class="big num">${money(exp)}</div>
+    <div class="sub">${AY[cur.m]} ayında harcadığın</div>
+    <div class="hero-note"><span>${leftDays > 1
+      ? `Bu ay harcamalar gelirini ${money(over)} aştı. Kalan ${leftDays} günde küçük adımlarla toparlanabilir; birlikte takip edelim.`
+      : `Bu ay harcamalar gelirini ${money(over)} aştı. Gelecek ay için Bütçe'de küçük bir sınır koymak işe yarar.`}</span></div>`;
+}
 function renderOzet(el) {
   const txs = monthTx(cur.y, cur.m);
   const inc = sum(txs, 'gelir'), exp = sum(txs, 'gider'), sav = monthSaved(cur.y, cur.m), left = inc - exp - sav;
@@ -852,14 +873,9 @@ function renderOzet(el) {
   h += `<section class="hero" aria-label="Ay özeti">
     <div class="hello-name">${isCurMonth() ? `Merhaba${ME.name ? ' ' + esc(ME.name) : ''}` : `${AY[cur.m]} ${cur.y}`}</div>
     <div class="hello-date">${isCurMonth() ? dateLine() : 'Geçmiş ay özeti'}${st >= 2 && isCurMonth() ? `<span class="streak">${st} gündür her gün kayıt girdin</span>` : ''}</div>
-    <div class="big num ${left < 0 ? 'neg' : ''}">${money(left)}</div>
-    <div class="sub">${inc ? `${AY[cur.m]} ayında elinde kalan` : 'Bu ay henüz gelir girilmedi'}</div>
-    <div class="split" role="img" aria-label="Gelirin dağılımı">
-      ${exp ? `<i style="width:${exp / base * 100}%;background:var(--out)"></i>` : ''}${sav > 0 ? `<i style="width:${sav / base * 100}%;background:var(--save)"></i>` : ''}${left > 0 ? `<i style="flex:1;background:var(--surface-2)"></i>` : ''}
-    </div>
-    <div class="split-l num"><span><i class="dot" style="background:var(--out)"></i>Harcama ${money(exp)}</span>${sav > 0 ? `<span><i class="dot" style="background:var(--save)"></i>Birikim ${money(sav)}</span>` : ''}${left > 0 ? `<span><i class="dot" style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--axis)"></i>Kalan %${pctOf(left, inc)}</span>` : ''}</div>
+    ${heroMain(inc, exp, sav, left, base, elapsed, dim)}
     <div class="io">
-      <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${inc ? `tasarruf oranı %${Math.max(0, pctOf(inc - exp, inc))}` : '&nbsp;'}</em></div>
+      <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${inc && inc > exp ? `tasarruf oranı %${pctOf(inc - exp, inc)}` : '&nbsp;'}</em></div>
       <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${money(exp)}</b><em class="num">${exp ? `günlük ${money(dailyExp)} · sabit ${money(exp - dailyExp)}` : '&nbsp;'}</em></div>
     </div>
   </section>`;
@@ -1969,6 +1985,7 @@ document.addEventListener('click', e => {
       Object.fromEntries(Object.entries(RATES.manual).map(([k, v]) => [k, String(v).replace('.', ',')])),
       v => { RATES.manual = {}; Object.entries(v).forEach(([k, x]) => { if (x > 0) RATES.manual[k] = x; }); saveRates(); render(); });
     else if (act === 'allRems') { showAllRems = !showAllRems; render(); }
+    else if (act === 'addIncome') openSheet({type: 'gelir', cat: 'maas'});
     else if (act === 'snoozeBackup') { S.backupSnooze = Date.now() + 7 * 864e5; save(); render(); }
     else if (act === 'setPin') formModal(getPin() ? 'PIN\'i değiştir' : 'PIN koy', [{k: 'p1', label: '4 haneli PIN', t: 'pin'}, {k: 'p2', label: 'PIN\'i tekrar yaz', t: 'pin'}], {},
       v => { if (!/^\d{4}$/.test(v.p1)) return 'PIN 4 rakam olmalı.'; if (v.p1 !== v.p2) return 'İki PIN aynı değil.';
