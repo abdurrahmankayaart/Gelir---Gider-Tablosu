@@ -868,6 +868,17 @@ function heroAlt(inc, exp, sav, elapsed, dim, st, dailyTx) {
       <div class="sub">${has ? `bugün rahatça harcayabileceğin · ay sonuna ${daysLeft} gün` : !cm ? 'geçmiş ay' : (B > 0 || inc > 0) ? 'Bugün küçük harcamalarla idare etmeyi dene; ay yakında yenileniyor.' : 'Gelirini ya da aylık bütçeni eklersen günlük payını hesaplarız.'}</div>
       <div class="hstats">${chip(todayN, 'bugünkü kayıt')}${chip(noSpend, 'harcamasız gün')}${chip(st, 'gün üst üste kayıt')}</div>`;
   }
+  if (heroStyle === 'bugun') {
+    const tl = dailyTx.filter(t => t.date === today && t.type === 'gider'), tExp = sum(tl), left = inc - exp - sav;
+    const mm = v => heroPeek ? money(v) : '₺ • • • •';
+    return `<div class="big num">${cm ? money(tExp) : money(exp)}</div>
+      <div class="sub">${cm ? (tl.length ? `bugün harcadığın · ${tl.length} kayıt` : 'bugün henüz harcama yok') : `${AY[cur.m]} ayında harcadığın`}</div>
+      ${cm ? `<button class="peek" data-act="heroPeek" aria-pressed="${heroPeek}" aria-expanded="${heroPeek}">${svgI(heroPeek ? 'eyeoff' : 'eye', 18)}<span>${heroPeek ? 'Aylık toplamı gizle' : 'Aylık toplamı göster'}</span></button>
+      <div class="io">
+        <div class="card"><small><i class="dot" style="background:var(--out)"></i>${AY[cur.m]} gideri</small><b class="num">${mm(exp)}</b><em class="num">${heroPeek && exp ? `günlük ${money(dailyTx.filter(t => t.type === 'gider').reduce((a, t) => a + t.amount, 0))} · sabit ${money(exp - dailyTx.filter(t => t.type === 'gider').reduce((a, t) => a + t.amount, 0))}` : '&nbsp;'}</em></div>
+        <div class="card"><small><i class="dot" style="background:var(--in)"></i>${inc && left >= 0 ? 'Elinde kalan' : 'Gelir'}</small><b class="num">${mm(inc && left >= 0 ? left : inc)}</b><em class="num">${heroPeek && inc ? (left >= 0 ? `gelir ${money(inc)}` : 'bu ayki gelirin') : '&nbsp;'}</em></div>
+      </div>` : ''}`;
+  }
   if (heroStyle === 'aliskanlik') {
     return `<div class="big num">${noSpend}</div>
       <div class="sub">${cm ? 'bu ay harcamasız geçen gün' : `${AY[cur.m]} ayında harcamasız gün`}</div>
