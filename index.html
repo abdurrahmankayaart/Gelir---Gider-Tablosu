@@ -427,6 +427,11 @@ details.fold[open]>summary .i{transform:rotate(180deg)}
 .hero .big{color:#D4C4B0}
 .hero-note{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--surface);font-size:13.5px;color:var(--ink-2);line-height:1.4}
 .hero-note span{flex:1 1 200px}
+.hstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.hstat{background:var(--surface);border-radius:14px;padding:10px 12px}
+.hstat b{display:block;font-family:var(--display);font-size:19px;font-weight:700}
+.hstat span{font-size:11.5px;color:var(--muted);line-height:1.25;display:block}
+.peek{display:inline-flex;align-items:center;gap:8px;margin-top:14px;border:0;border-radius:12px;padding:9px 13px;background:var(--surface);color:var(--ink);font-weight:700;font-size:13.5px}
 .verse{margin:14px 2px 0;padding-top:12px;border-top:1px solid var(--line)}
 .verse blockquote{margin:0;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:14.5px;line-height:1.5;color:var(--ink-2)}
 .verse figcaption{margin-top:6px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -583,6 +588,8 @@ const catList = type => BASE[type].map(([id, name, ic, color]) => ({id, name, ic
 const catById = id => catList('gider').concat(catList('gelir')).find(c => c.id === id) || {id, name: 'Diğer', ic: '📦', color: '#6B7280', type: 'gider'};
 const cs = c => `style="--c:${c.color}"`;
 const ICONS = {
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff: '<path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17.5 17.5 0 0 0 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
   market: '<path d="M3 4h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.3"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/>',
   yemek: '<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.2 1.4-3 3.8-3 7v3h3"/>',
   ulasim: '<rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 17v3M16 17v3"/><circle cx="8" cy="14" r=".6"/><circle cx="16" cy="14" r=".6"/>',
@@ -845,6 +852,34 @@ function render(animate) {
 function go(v) { if (v !== view) buzz(5); view = v; saveUi(); if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v); render(true); window.scrollTo(0, 0); }
 
 /* ================= ÖZET ================= */
+/* Üst kart görünümü: 'klasik' (tutarlar), 'pay' (günlük pay), 'aliskanlik' (olumlu alışkanlıklar), 'gizli' (tutarlar dokununca açılır) */
+let heroStyle = (() => { try { return localStorage.getItem('kese.hero') || 'klasik'; } catch (e) { return 'klasik'; } })();
+let heroPeek = false;
+function heroAlt(inc, exp, sav, elapsed, dim, st, dailyTx) {
+  const cm = isCurMonth(), today = dstr(now0), daysLeft = cm ? dim - elapsed + 1 : 0;
+  const per = {}; dailyTx.filter(t => t.type === 'gider').forEach(t => { per[t.date] = (per[t.date] || 0) + t.amount; });
+  const noSpend = Array.from({length: elapsed}, (_, i) => dstr(new Date(cur.y, cur.m, i + 1))).filter(d => !per[d]).length;
+  const todayN = monthTx(cur.y, cur.m).filter(t => t.date === today).length;
+  const chip = (v, l) => `<div class="hstat"><b class="num">${v}</b><span>${l}</span></div>`;
+  if (heroStyle === 'pay') {
+    const B = S.budgets.total || 0, pool = B > 0 ? B - exp : inc - exp - sav;
+    const has = cm && (B > 0 || inc > 0) && pool > 0;
+    return `<div class="big num">${has ? money(Math.floor(pool / Math.max(1, daysLeft) / 10) * 10) : '🌿'}</div>
+      <div class="sub">${has ? `bugün rahatça harcayabileceğin · ay sonuna ${daysLeft} gün` : !cm ? 'geçmiş ay' : (B > 0 || inc > 0) ? 'Bugün küçük harcamalarla idare etmeyi dene; ay yakında yenileniyor.' : 'Gelirini ya da aylık bütçeni eklersen günlük payını hesaplarız.'}</div>
+      <div class="hstats">${chip(todayN, 'bugünkü kayıt')}${chip(noSpend, 'harcamasız gün')}${chip(st, 'gün üst üste kayıt')}</div>`;
+  }
+  if (heroStyle === 'aliskanlik') {
+    return `<div class="big num">${noSpend}</div>
+      <div class="sub">${cm ? 'bu ay harcamasız geçen gün' : `${AY[cur.m]} ayında harcamasız gün`}</div>
+      <div class="hstats">${chip(st, 'gün üst üste kayıt')}${chip(sav > 0 ? money(sav) : '—', 'bu ay birikime')}${chip(todayN, 'bugünkü kayıt')}</div>`;
+  }
+  const m = v => heroPeek ? money(v) : '₺ • • • •';
+  return `<button class="peek" data-act="heroPeek" aria-pressed="${heroPeek}">${svgI(heroPeek ? 'eyeoff' : 'eye', 18)}<span>${heroPeek ? 'Tutarları gizle' : 'Ay özetini göster'}</span></button>
+    <div class="io">
+      <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${m(inc)}</b></div>
+      <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${m(exp)}</b></div>
+    </div>`;
+}
 /* Ana rakam: eksiye düşünce kırmızı "−" yerine harcanan tutar ve yumuşak bir yol gösterici. */
 function heroMain(inc, exp, sav, left, base, elapsed, dim) {
   const leftDays = isCurMonth() ? dim - elapsed + 1 : 0;
@@ -886,11 +921,13 @@ function renderOzet(el) {
   h += `<section class="hero" aria-label="Ay özeti">
     <div class="hello-name">${isCurMonth() ? `Merhaba${ME.name ? ' ' + esc(ME.name) : ''}` : `${AY[cur.m]} ${cur.y}`}</div>
     <div class="hello-date">${isCurMonth() ? dateLine() : 'Geçmiş ay özeti'}${st >= 2 && isCurMonth() ? `<span class="streak">${st} gündür her gün kayıt girdin</span>` : ''}</div>
+    ${heroStyle === 'klasik' ? `
     ${heroMain(inc, exp, sav, left, base, elapsed, dim)}
     <div class="io">
       <div class="card"><small><i class="dot" style="background:var(--in)"></i>Gelir</small><b class="num">${money(inc)}</b><em>${!inc ? 'maaş ya da diğer gelirlerini ekle' : inc > exp ? `tasarruf oranı %${pctOf(inc - exp, inc)}` : (() => { const n = monthTx(cur.y, cur.m).filter(t => t.type === 'gelir').length; return n > 1 ? `${n} gelir kaydı` : 'bu ayki gelirin'; })()}</em></div>
       <div class="card"><small><i class="dot" style="background:var(--out)"></i>Gider</small><b class="num">${money(exp)}</b><em class="num">${exp ? `günlük ${money(dailyExp)} · sabit ${money(exp - dailyExp)}` : '&nbsp;'}</em></div>
     </div>
+    ` : heroAlt(inc, exp, sav, elapsed, dim, st, dailyTx)}
     <figure class="verse"><blockquote>“Ey Âdemoğulları! Her namaz kılacağınızda güzelce giyinin, yiyin için fakat israf etmeyin. Çünkü Allah israf edenleri sevmez.”</blockquote><figcaption>A‘râf Sûresi, 31</figcaption></figure>
   </section>`;
 
@@ -1999,6 +2036,7 @@ document.addEventListener('click', e => {
       Object.fromEntries(Object.entries(RATES.manual).map(([k, v]) => [k, String(v).replace('.', ',')])),
       v => { RATES.manual = {}; Object.entries(v).forEach(([k, x]) => { if (x > 0) RATES.manual[k] = x; }); saveRates(); render(); });
     else if (act === 'allRems') { showAllRems = !showAllRems; render(); }
+    else if (act === 'heroPeek') { heroPeek = !heroPeek; render(); }
     else if (act === 'addIncome') openSheet({type: 'gelir', cat: 'maas'});
     else if (act === 'snoozeBackup') { S.backupSnooze = Date.now() + 7 * 864e5; save(); render(); }
     else if (act === 'setPin') formModal(getPin() ? 'PIN\'i değiştir' : 'PIN koy', [{k: 'p1', label: '4 haneli PIN', t: 'pin'}, {k: 'p2', label: 'PIN\'i tekrar yaz', t: 'pin'}], {},
